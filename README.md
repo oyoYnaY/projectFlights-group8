@@ -4,7 +4,7 @@ This project is belong to the **XB_0112 Data Engineering** group assignment. It 
 
 ### Features
 - **Global US airport distribution** – Visualize all airports on a US map.
-- **Flight route visualization** – Display routes between JFK and other airports.
+- **Flight route visualization** – Display routes between New York and other airports.
 - **Distance calculations** – Compute Euclidean and geodesic distances.
 - ...
 
