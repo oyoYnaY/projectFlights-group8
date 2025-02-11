@@ -1,21 +1,41 @@
-# projectFlights-group8-
+
 ## Flights Analysis Dashboard✈️
 This project is belong to the **XB_0112 Data Engineering** group assignment. It provides an interactive dashboard to visualize airport and flight data using Python and Plotly. The dashboard includes functionalities such as global airport distribution, flight route visualization, and distance calculations.
 
-### Features
+## Dataset Overview
+This dataset contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
+
+Since all flights originate from **New York City airports** (`EWR`- Newark Liberty International Airport), this dataset does **not** contain departure airport information—only details about where flights arrived.
+
+---
+
+### Data Fields
+
+| **Column** | **Description** | **Example Value** |
+|-----------|----------------|------------------|
+| `faa` | **FAA Code** (Three-letter identifier for the destination airport) | `"AAF"` (Apalachicola Regional Airport) |
+| `name` | **Destination Airport Name** | `"Apalachicola Regional Airport"` |
+| `lat` | **Latitude** (Geographical coordinate of the airport) | `29.72750092` |
+| `lon` | **Longitude** (Geographical coordinate of the airport) | `-85.02749634` |
+| `alt` | **Altitude** (Elevation of the airport in feet) | `20` |
+| `tz` | **Time Zone Offset** (Relative to UTC) | `-5` (Apalachicola in UTC-5) |
+| `dst` | **Daylight Saving Time (DST) Usage** | `"A"` (Active, follows DST) |
+| `tzone` | **Time Zone Name** | `"America/New_York"` |
+
+## Project Features
 - **Global US airport distribution** – Visualize all airports on a US map.
 - **Flight route visualization** – Display routes between New York and other airports.
 - **Distance calculations** – Compute Euclidean and geodesic distances.
-- ...
+- ...(update later)
 
-### Installation & Setup
-#### Clone the repository
+## Installation & Setup
+### Clone the repository
 ```bash
 git clone https://github.com/oyoYnaY/projectFlights-group8.git
 cd flights-analysis
 ```
 
-#### [optional] Create a virtual environment and activate it
+### [optional] Create a virtual environment and activate it
 Since macOS restricts global pip installation, the best solution is to create a virtual environment:
 ```bash
 python3 -m venv myenv
@@ -23,13 +43,13 @@ source myenv/bin/activate  # macOS/Linux
 myenv\Scripts\activate     # Windows
 ```
 
-#### Download libary
+### Download libary
 ```bash
 pip install --upgrade pip    
 pip install plotly
 pip install geopy
 ```
-#### Run
+### Run
 ```bash
 python3 flights.py
 ```
