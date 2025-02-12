@@ -66,6 +66,8 @@ df["tz"] = df["tz"].astype("Int64")
 |------|------|
 | `tz` | Int64 |
 
+### Data Cleaning
+
 ### Descriptive Statistics
 After inferring the missing values, we used various charts and graphs to analyze patterns and relationships between different attributes in the dataset.
 ```python
@@ -98,6 +100,7 @@ Most airports are **near sea level**, though a few **high-altitude airports exis
 The following airports **do not observe DST** and are located in specific regions:  
 **Airports around latitude ~20° and longitude ~-160°**, **Airports around latitude ~30-35° and longitude ~-110°**. Later can visualizing these airports on a map to see the locations.
 
+### Visualization 
 
 
 
