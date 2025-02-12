@@ -85,18 +85,18 @@ plt.show()
 
 
 
+############################################################################################################################################################################
 
 
-
-# # plot global airport distribution, with color coded by 'alt' (altitude)
-# fig_global = px.scatter_geo(df, 
-#                             lat="lat", lon="lon", 
-#                             hover_name="name",
-#                             color="alt",  # color by altitude
-#                             title="global airport distribution (colored by altitude)",
-#                             projection="natural earth",
-#                             color_continuous_scale="plasma")  # choose color scale
-# fig_global.show()
+# plot global airport distribution, with color coded by 'alt' (altitude)
+fig_global = px.scatter_geo(df, 
+                            lat="lat", lon="lon", 
+                            hover_name="name",
+                            color="alt_meters",  # color by altitude
+                            title="global airport distribution (colored by altitude)",
+                            projection="natural earth",
+                            color_continuous_scale="plasma")  # choose color scale
+fig_global.show()
 
 # # filter only us airports
 # df_us = df[df["tzone"].str.startswith("America")] 
