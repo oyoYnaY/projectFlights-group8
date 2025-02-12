@@ -2,7 +2,7 @@
 ## Flights Analysis Dashboard✈️
 This project is belong to the **XB_0112 Data Engineering** group assignment. It provides an interactive dashboard to visualize airport and flight data using Python and Plotly. The dashboard includes functionalities such as global airport distribution, flight route visualization, and distance calculations.
 ### Project Report
-[a relative link](project%20report.md)
+[Project Report](project%20report.md)
 
 ## Dataset Overview
 This dataset contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
@@ -86,7 +86,7 @@ PROJECTFLIGHTS-GROUP8/
 Following this workflow ensures an organized and efficient development process.
 
 ### Git Collaboration Guidelines
-[a relative link](CONTRIBUTING.md)
+[CONTRIBUTING.md](CONTRIBUTING.md)
 
 
 
