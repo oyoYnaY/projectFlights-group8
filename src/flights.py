@@ -71,6 +71,18 @@ plt.grid(True)
 
 plt.show()
 
+# find airports that do not observe daylight saving time, later visualizing these airports on a map
+df_no_dst = df[df["dst"] == "N"]
+
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x=df_no_dst["lon"], y=df_no_dst["lat"], color="red")
+
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.title("Airports That Do NOT Observe DST")
+
+plt.show()
+
 
 
 
