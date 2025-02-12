@@ -9,8 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Assign reviewers
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Auto Assign PR
       uses: kentaro-m/auto-assign-action@v1.2.0
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        reviewers: "oyoYnaY,team-member-1, team-member-2"
+        repo-token: ${{ secrets.GITHUB_TOKEN }}  # ✅ Use 'repo-token'
+        addReviewers: true
+        reviewers: |
+          - oyoYnaY
+        addAssignees: true
+        assignees: |
+          - oyoYnaY
