@@ -31,7 +31,9 @@ The following Python libraries were used in this project for **data processing, 
 - `geopy` – For geographic distance calculations.
 - `matplotlib` - For descriptive statistics
 - `timezonefinder` - For inferring the missing value
+- `seaborn` - Statistical data visualization
 - ``
+  
 ### Data Cleaning
 ```python
 print("missing values in each column:\n", df.isnull().sum()) 
