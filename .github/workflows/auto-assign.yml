@@ -1,4 +1,4 @@
-name: Auto-Assign Reviewer
+name: Auto-Assign Random Reviewer
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ jobs:
   auto-assign:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write   # Allows modifying PRs
+      pull-requests: write  # Grants access to modify PRs
 
     steps:
     - name: Checkout repository
