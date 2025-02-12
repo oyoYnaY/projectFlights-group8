@@ -1,6 +1,8 @@
 
 ## Flights Analysis Dashboard✈️
 This project is belong to the **XB_0112 Data Engineering** group assignment. It provides an interactive dashboard to visualize airport and flight data using Python and Plotly. The dashboard includes functionalities such as global airport distribution, flight route visualization, and distance calculations.
+### Project Report
+[a relative link](project report.md)
 
 ## Dataset Overview
 This dataset contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
@@ -32,15 +34,15 @@ Since all flights originate from **New York City airports** (`EWR`- Newark Liber
 ### Clone the repository
 ```bash
 git clone https://github.com/oyoYnaY/projectFlights-group8.git
-cd flights-analysis
 ```
 
 ### [optional] Create a virtual environment and activate it
 Since macOS restricts global pip installation, the best solution is to create a virtual environment:
 ```bash
 python3 -m venv myenv
-source myenv/bin/activate  # macOS/Linux
-myenv\Scripts\activate     # Windows
+source myenv/bin/activate  # open virtual environment on macOS/Linux
+myenv\Scripts\activate     # virtual environment on Windows
+^C #close the virtual environment
 ```
 
 ### Download libary
@@ -58,7 +60,8 @@ python3 flights.py
 | Step | Command |
 |------|---------|
 | **Clone the repository** | `git clone https://github.com/oyoYnaY/projectFlights-group8.git` |
-| **Create a new branch** | `git checkout -b feature-branch-name` |
+| **Create a new branch && Switch to the new branch** | `git checkout -b 6-add-linkes-to-readme` |
+| **Switch to an existing branch** | `git checkout branch-name` |
 | **Commit changes** | `git add . && git commit -m "Your commit message"` |
 | **Push to remote repository** | `git push origin feature-branch-name` |
 | **Create a Pull Request** | Navigate to GitHub → Click on "New Pull Request" |
@@ -68,5 +71,9 @@ python3 flights.py
 | **Deploy the code** | Manually run `git pull` on the server |
 
 Following this workflow ensures an organized and efficient development process.
+
+### Git Collaboration Guidelines
+[a relative link](CONTRIBUTING.md)
+
 
 
