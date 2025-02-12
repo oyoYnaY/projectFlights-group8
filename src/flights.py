@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 from geopy.distance import geodesic
 import matplotlib.pyplot as plt
 from timezonefinder import TimezoneFinder
+import seaborn as sns
 
 # read airports.csv
 df = pd.read_csv("../data/airports.csv") 
@@ -41,7 +42,8 @@ print("missing values after final fix:\n", df.isnull().sum())
 
 # convert altitude to meters
 df["alt_meters"] = df["alt"] * 0.3048
-
+df["tz"] = df["tz"].astype("Int64") # convert tz to integer
+df.info()
 
 # explore relationships within the dataset
 print(df.describe()) # display descriptive statistics
@@ -52,6 +54,19 @@ plt.scatter(df["lat"], df["alt_meters"], alpha=0.5, color="blue")
 plt.xlabel("Latitude")
 plt.ylabel("Altitude (meters)")
 plt.title("Scatter Plot: Airport Altitude vs Latitude")
+plt.grid(True)
+
+plt.show()
+
+# print(df["dst"].unique()) # display unique values in 'dst' column
+
+# countplot: number of airports in each time zone
+plt.figure(figsize=(10, 6))
+sns.countplot(x=df["tz"], palette="coolwarm")
+
+plt.xlabel("Time Zone (UTC)")
+plt.ylabel("Number of Airports")
+plt.title("Number of Airports in Each Time Zone")
 plt.grid(True)
 
 plt.show()
