@@ -74,7 +74,7 @@ PROJECTFLIGHTS-GROUP8/
 | Step | Command |
 |------|---------|
 | **Clone the repository** | `git clone https://github.com/oyoYnaY/projectFlights-group8.git` |
-| **fetch origin** | `git fetch origin` |
+| **Fetch origin** | `git fetch origin` |
 | **Create a new branch && Switch to the new branch** | `git checkout -b 6-add-linkes-to-readme` |
 | **Switch to an existing branch** | `git checkout branch-name` |
 | **Commit changes** | `git add . && git commit -m "Your commit message"` |
