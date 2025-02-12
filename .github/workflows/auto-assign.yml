@@ -1,4 +1,4 @@
-name: Auto-Assign Reviewers
+name: Auto-Assign Reviewer
 
 on:
   pull_request:
@@ -7,6 +7,8 @@ on:
 jobs:
   auto-assign:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write   # Allows modifying PRs
 
     steps:
     - name: Checkout repository
@@ -15,5 +17,5 @@ jobs:
     - name: Auto Assign PR
       uses: kentaro-m/auto-assign-action@v2.0.0
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}  # ✅ Fix: Use 'repo-token' instead of 'github-token'
-        configuration-path: ".github/auto-assign.yml"  # ✅ Fix: Needs a separate config file
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: ".github/auto-assign.yml"
