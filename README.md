@@ -59,20 +59,22 @@ python3 flights.py
 ### Project Structure
 ```
 PROJECTFLIGHTS-GROUP8/
-│── data/                 # Contains dataset files (e.g., CSVs)
-│── figures/              # Stores generated visualizations (e.g., PNGs)
-│── scr/                  # Source code directory 
-│── .gitignore            # Specifies files/folders to ignore in Git
-│── CONTRIBUTING.md       # Guidelines for contributors
-│── flight-project introduction.pdf  # Project overview document
-│── project report.md     # Detailed project report
-│── README.md             # Project documentation
+|-- /.github/workflows/   # Auto test
+│-- data/                 # Contains dataset files (e.g., CSVs)
+│-- figures/              # Stores generated visualizations (e.g., PNGs)
+│-- scr/                  # Source code directory 
+│-- .gitignore            # Specifies files/folders to ignore in Git
+│-- CONTRIBUTING.md       # Guidelines for contributors
+│-- flight-project introduction.pdf  # Project overview document
+│-- project report.md     # Detailed project report
+│-- README.md             # Project documentation
 ```
 
 ### Git workflow
 | Step | Command |
 |------|---------|
 | **Clone the repository** | `git clone https://github.com/oyoYnaY/projectFlights-group8.git` |
+| **fetch origin** | `git fetch origin` |
 | **Create a new branch && Switch to the new branch** | `git checkout -b 6-add-linkes-to-readme` |
 | **Switch to an existing branch** | `git checkout branch-name` |
 | **Commit changes** | `git add . && git commit -m "Your commit message"` |
@@ -83,7 +85,7 @@ PROJECTFLIGHTS-GROUP8/
 | **Delete merged branch** | `git branch -d feature-branch-name && git push origin --delete feature-branch-name` |
 | **Deploy the code** | Manually run `git pull` on the server |
 
-Following this workflow ensures an organized and efficient development process.
+Following this workflow ensures an organized and efficient development process. **Ensure You Always Fetch the Latest Code Before Making Changes.**
 
 ### Git Collaboration Guidelines
 [CONTRIBUTING.md](CONTRIBUTING.md)
