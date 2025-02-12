@@ -51,9 +51,35 @@ Missing tz (time zone offset) and dst (daylight saving time info) in 48 rows.
 tzone (time zone name) missing in 119 rows, which may impact time-based analysis.
 
 Since tz (UTC offset), dst (Daylight Saving Time), and tzone (time zone name) are related, we can infer their missing values instead of dropping them. This will help retain more data and improve the accuracy of our analysis.
+### Data Transformation 
+Since altitude (alt) is given in feet, we need to convert it to meters.
+```python
+print("missing values in each column:\n", df.isnull().sum()) 
+```
 
 ### Descriptive Statistics
 After inferring the missing values, we used various charts and graphs to analyze patterns and relationships between different attributes in the dataset.
+```python
+print("missing values in each column:\n", df.isnull().sum()) 
+```
+|  | Latitude (`lat`) | Longitude (`lon`) | Altitude (`alt`) | Time Zone (`tz`) | alt_meters |
+|-----------|----------------|------------------|------------------|------------------|------------------|
+| **Count** | 1251 | 1251 | 1251 | 1251 | 1251 |
+| **Mean** | 40.9333 | -103.4659 | 1121.9920 | -6.3333 |  341.983164 |
+| **Std Dev** | 10.1935 | 28.1121 | 1602.5218 | 2.0812 | 488.448652 |
+| **Min** | 19.7214 | -176.6460 | -115.0000 | -10.0000 | -35.052000 |
+| **25%** | 34.1035 | -117.8760 | 96.0000 | -8.0000 | 29.260800 |
+| **50% (Median)** | 39.3451 | -95.9125 | 551.0000 | -6.0000 | 167.944800 |
+| **75%** | 44.3167 | -83.2863 | 1226.0000 | -5.0000 | 373.684800 |
+| **Max** | 71.29 | 174.11 | 9070.000000 | 8.00 | 2764.536000 |
+
+This dataset contains **1251 records**, with each row representing a **landing airport**.  
+Most destinations are primarily located in the **mid-latitude regions (30°N to 50°N)**, with some airports in **tropical and Arctic regions**.  
+
+The majority of airports are in **North America**, within the **UTC-10 to UTC-5 time zones**, but some flights reach **Asia and the Pacific**.  
+Most airports are **near sea level**, though a few **high-altitude airports exist in mountainous regions**.  
+
+#### To better understand the relationships between different variables, we can create several visualizations.
 ![Figure 1: Altitude vs Latitude](figures/Figure_1.png)
 
 
