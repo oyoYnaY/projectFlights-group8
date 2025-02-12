@@ -87,7 +87,11 @@ The majority of airports are in **North America**, within the **UTC-10 to UTC-5 
 Most airports are **near sea level**, though a few **high-altitude airports exist in mountainous regions**.  
 
 #### To better understand the relationships between different variables, we can create several visualizations.
-![Figure 1: Altitude vs Latitude](figures/Figure_1.png)
+<div align="center">
+  <img src="figures/Figure_1.png" alt="Figure 1: Altitude vs Latitude" width="45%"/>
+  <img src="figures/Figure_2.png" alt="Figure 2: Altitude vs Latitude" width="45%"/>
+</div>
+
 
 
 
