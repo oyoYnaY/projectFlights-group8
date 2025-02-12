@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from timezonefinder import TimezoneFinder
 
 # read airports.csv
-df = pd.read_csv("airports.csv") 
+df = pd.read_csv("data/airports.csv") 
 
 # descriptive statistics and data preprocessing
 print("first 5 rows of the dataset:\n", df.head())  # display first few rows
