@@ -62,7 +62,7 @@ PROJECTFLIGHTS-GROUP8/
 |-- /.github/workflows/   # Auto test
 │-- data/                 # Contains dataset files (e.g., CSVs)
 │-- figures/              # Stores generated visualizations (e.g., PNGs)
-│-- scr/                  # Source code directory 
+│-- src/                  # Source code directory 
 │-- .gitignore            # Specifies files/folders to ignore in Git
 │-- CONTRIBUTING.md       # Guidelines for contributors
 │-- flight-project introduction.pdf  # Project overview document
