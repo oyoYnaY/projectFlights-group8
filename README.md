@@ -57,6 +57,7 @@ python3 flights.py
 ```
 
 ### Project Structure
+```
 PROJECTFLIGHTS-GROUP8/
 │── data/                 # Contains dataset files (e.g., CSVs)
 │── figures/              # Stores generated visualizations (e.g., PNGs)
@@ -66,6 +67,7 @@ PROJECTFLIGHTS-GROUP8/
 │── flight-project introduction.pdf  # Project overview document
 │── project report.md     # Detailed project report
 │── README.md             # Project documentation
+```
 
 ### Git workflow
 | Step | Command |
