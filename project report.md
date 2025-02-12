@@ -54,8 +54,15 @@ Since tz (UTC offset), dst (Daylight Saving Time), and tzone (time zone name) ar
 ### Data Transformation 
 Since altitude (alt) is given in feet, we need to convert it to meters.
 ```python
-print("missing values in each column:\n", df.isnull().sum()) 
+df["alt_meters"] = df["alt"] * 0.3048 # use alt_meters to replace alt
 ```
+Convert tz to Integer
+```python
+df["tz"] = df["tz"].astype("Int64")
+```
+|  | **Data Type** |
+|------|------|
+| tz | Int64 |
 
 ### Descriptive Statistics
 After inferring the missing values, we used various charts and graphs to analyze patterns and relationships between different attributes in the dataset.
@@ -63,7 +70,7 @@ After inferring the missing values, we used various charts and graphs to analyze
 print("missing values in each column:\n", df.isnull().sum()) 
 ```
 |  | Latitude (`lat`) | Longitude (`lon`) | Altitude (`alt`) | Time Zone (`tz`) | alt_meters |
-|-----------|----------------|------------------|------------------|------------------|------------------|
+|-----------|----------------|------------------|------------------|------------------|-------------------|
 | **Count** | 1251 | 1251 | 1251 | 1251 | 1251 |
 | **Mean** | 40.9333 | -103.4659 | 1121.9920 | -6.3333 |  341.983164 |
 | **Std Dev** | 10.1935 | 28.1121 | 1602.5218 | 2.0812 | 488.448652 |
