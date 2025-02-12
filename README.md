@@ -11,18 +11,15 @@ Since all flights originate from **New York City airports** (`EWR`- Newark Liber
 
 ---
 
-### Data Fields
-
-| **Column** | **Description** | **Example Value** |
-|-----------|----------------|------------------|
-| `faa` | **FAA Code** (Three-letter identifier for the destination airport) | `"AAF"` (Apalachicola Regional Airport) |
-| `name` | **Destination Airport Name** | `"Apalachicola Regional Airport"` |
-| `lat` | **Latitude** (Geographical coordinate of the airport) | `29.72750092` |
-| `lon` | **Longitude** (Geographical coordinate of the airport) | `-85.02749634` |
-| `alt` | **Altitude** (Elevation of the airport in feet) | `20` |
-| `tz` | **Time Zone Offset** (Relative to UTC) | `-5` (Apalachicola in UTC-5) |
-| `dst` | **Daylight Saving Time (DST) Usage** | `"A"` (Active, follows DST) |
-| `tzone` | **Time Zone Name** | `"America/New_York"` |
+### Dataset Fields
+This dataset contains **information on all destination airports** for flights departing from **New York City in 2023**.  
+Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as:
+- **FAA code** (Three-letter airport code)
+- **Airport name**
+- **Latitude & Longitude** (Geographical coordinates)
+- **Altitude** (Airport elevation in feet)
+- **Time zone** (UTC offset)
+- **Daylight saving time (DST) usage**
 
 ## Project Features
 - **Global US airport distribution** – Visualize all airports on a US map.
