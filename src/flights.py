@@ -35,21 +35,28 @@ df["dst"] = df.apply(lambda row: dst_mapping.get(row["tzone"], row["dst"]) if pd
 # check for missing values after inference
 print("missing values after inference:\n", df.isnull().sum())
 print(df[df["tz"].isnull()])
-print(df[df["tzone"] == "America/Boise"][["tzone", "tz"]].dropna().drop_duplicates())
-df.loc[df["tzone"] == "America/Boise", "tz"] = -7
-print("missing values after final fix:\n", df.isnull().sum())
+print(df[df["tzone"] == "America/Boise"][["tzone", "tz"]].dropna().drop_duplicates()) # check for missing values in America/Boise
+df.loc[df["tzone"] == "America/Boise", "tz"] = -7 # fix missing values in America/Boise
+print("missing values after final fix:\n", df.isnull().sum()) 
+
+# convert altitude to meters
+df["alt_meters"] = df["alt"] * 0.3048
+
 
 # explore relationships within the dataset
+print(df.describe()) # display descriptive statistics
 # scatter plot: altitude vs latitude
 plt.figure(figsize=(10, 6))
-plt.scatter(df["lat"], df["alt"], alpha=0.5, color="blue")
+plt.scatter(df["lat"], df["alt_meters"], alpha=0.5, color="blue")
 
 plt.xlabel("Latitude")
-plt.ylabel("Altitude (feet)")
+plt.ylabel("Altitude (meters)")
 plt.title("Scatter Plot: Airport Altitude vs Latitude")
 plt.grid(True)
 
 plt.show()
+
+
 
 
 
