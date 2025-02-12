@@ -66,8 +66,6 @@ df["tz"] = df["tz"].astype("Int64")
 |------|------|
 | `tz` | Int64 |
 
-### Data Cleaning
-
 ### Descriptive Statistics
 After inferring the missing values, we used various charts and graphs to analyze patterns and relationships between different attributes in the dataset.
 ```python
