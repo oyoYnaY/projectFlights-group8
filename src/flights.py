@@ -52,6 +52,8 @@ plt.grid(True)
 plt.show()
 
 
+
+
 # # plot global airport distribution, with color coded by 'alt' (altitude)
 # fig_global = px.scatter_geo(df, 
 #                             lat="lat", lon="lon", 
