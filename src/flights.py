@@ -56,9 +56,9 @@ plt.ylabel("Altitude (meters)")
 plt.title("Scatter Plot: Airport Altitude vs Latitude")
 plt.grid(True)
 
-plt.show()
+# plt.show()
 
-# print(df["dst"].unique()) # display unique values in 'dst' column
+# print(df["dst"].unique()) # display unique values in 'dst' column 
 
 # countplot: number of airports in each time zone
 plt.figure(figsize=(10, 6))
@@ -69,7 +69,7 @@ plt.ylabel("Number of Airports")
 plt.title("Number of Airports in Each Time Zone")
 plt.grid(True)
 
-plt.show()
+# plt.show()
 
 # find airports that do not observe daylight saving time, later visualizing these airports on a map
 df_no_dst = df[df["dst"] == "N"]
@@ -81,12 +81,12 @@ plt.xlabel("Longitude")
 plt.ylabel("Latitude")
 plt.title("Airports That Do NOT Observe DST")
 
-plt.show()
+# plt.show()
 
 
 
 ############################################################################################################################################################################
-
+# Part 1
 # visualizations
 # plot global airport distribution, with color coded by 'alt' (altitude)
 fig_global = px.scatter_geo(df, 
@@ -95,18 +95,19 @@ fig_global = px.scatter_geo(df,
                             color="alt_meters",  # color by altitude
                             title="global airport distribution (colored by altitude)",
                             projection="natural earth",
-                            color_continuous_scale="plasma")  # choose color scale
+                            color_continuous_scale="Viridis")  # choose color scale
 fig_global.show()
 
-# # filter only us airports
-# df_us = df[df["tzone"].str.startswith("America")] 
+# plot US airport distribution, with color coded by 'alt' (altitude)
+# use scatter_geo funcion, scope="usa"
+fig_us= px.scatter_geo(df, 
+                        lat="lat", lon="lon", 
+                        hover_name="name",
+                        color="alt_meters",  # color by altitude
+                        title="us airport distribution (colored by altitude)",
+                        scope="usa",
+                        color_continuous_scale="Viridis")
+fig_us.show()
 
-# # plot us airport distribution, with color coded by 'alt' (altitude)
-# fig_us = px.scatter_geo(df_us, 
-#                         lat="lat", lon="lon", 
-#                         hover_name="name",
-#                         color="alt",  # color by altitude
-#                         title="us airport distribution (colored by altitude)",
-#                         scope="usa",
-#                         color_continuous_scale="plasma")
-# fig_us.show()
+
+
