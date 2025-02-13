@@ -93,10 +93,14 @@ fig_global = px.scatter_geo(df,
                             lat="lat", lon="lon", 
                             hover_name="name",
                             color="alt_meters",  # color by altitude
-                            title="global airport distribution (colored by altitude)",
+                            title="Global Airport Distribution (Colored by Altitude)",
                             projection="natural earth",
-                            color_continuous_scale="Viridis")  # choose color scale
+                            color_continuous_scale="Viridis",  # Choose color scale
+                            labels={"alt_meters": "Altitude (m)"}  # Set color legend title
+    )
+
 fig_global.show()
+
 
 # plot US airport distribution, with color coded by 'alt' (altitude)
 # use scatter_geo funcion, scope="usa"
@@ -106,8 +110,8 @@ fig_us= px.scatter_geo(df,
                         color="alt_meters",  # color by altitude
                         title="us airport distribution (colored by altitude)",
                         scope="usa",
-                        color_continuous_scale="Viridis")
+                        color_continuous_scale="Viridis",
+                        labels={"alt_meters": "Altitude (m)"} 
+                        )
 fig_us.show()
-
-
 
