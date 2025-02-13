@@ -90,15 +90,19 @@ Most airports are **near sea level**, though a few **high-altitude airports exis
 
 #### To better understand the relationships between different variables, we can create several visualizations.
 <div align="center">
-  <img src="figures/Figure_1.png" alt="Figure 1: Altitude vs Latitude" width="77%"/>
-  <img src="figures/Figure_2.png" alt="Figure 2: Altitude vs Latitude" width="77%"/>
-  <img src="figures/Figure_3.png" alt="Figure 3: Altitude vs Latitude" width="77%"/>
+  <img src="figures/Figure_1.png" alt="Figure 1: Altitude vs Latitude" width="45%"/>
+  <img src="figures/Figure_2.png" alt="Figure 2: Altitude vs Latitude" width="45%"/>
+  <img src="figures/Figure_3.png" alt="Figure 3: Altitude vs Latitude" width="45%"/>
 </div>
 
 The following airports **do not observe DST** and are located in specific regions:  
 **Airports around latitude ~20° and longitude ~-160°**, **Airports around latitude ~30-35° and longitude ~-110°**. Later can visualizing these airports on a map to see the locations.
 
 ### Visualization 
+<div align="center">
+  <img src="figures/Figure_5.png" alt="Figure 5: World map" width="45%"/>
+  <img src="figures/Figure_4.png" alt="Figure 4: US map" width="45%"/>
+</div>
 
 
 
