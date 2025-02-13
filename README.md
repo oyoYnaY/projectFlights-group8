@@ -84,6 +84,21 @@ PROJECTFLIGHTS-GROUP8/
 
 Following this workflow ensures an organized and efficient development process. **Ensure You Always Fetch the Latest Code Before Making Changes.**
 
+**If your local changes have not been committed, but you want to sync with the remote repository:**
+
+1. Store your changes.
+```bash
+git stash
+```
+2. Sync with the remote repository.
+```bash
+git pull origin main
+```
+3. Retrieve your changes.
+```bash
+git stash pop
+```
+
 ### Git Collaboration Guidelines
 [CONTRIBUTING.md](CONTRIBUTING.md)
 
