@@ -66,6 +66,8 @@ PROJECTFLIGHTS-GROUP8/
 │-- project report.md     # Detailed project report
 │-- README.md             # Project documentation
 ```
+### Git Collaboration Guidelines
+[CONTRIBUTING.md](CONTRIBUTING.md)
 
 ### Git workflow
 | Step | Command |
@@ -98,9 +100,6 @@ Get your changes.
 ```bash
 git stash pop
 ```
-
-### Git Collaboration Guidelines
-[CONTRIBUTING.md](CONTRIBUTING.md)
 
 
 
