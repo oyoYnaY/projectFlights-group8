@@ -20,7 +20,7 @@
 | `dst` | **Daylight Saving Time (DST) Usage** | `"A"` (Active, follows DST) | `object` |
 | `tzone` | **Time Zone Name** | `"America/New_York"` | `object` |
 
-Since all flights originate from New York City airports, we checked the map and found that only EWR is included among NYC airports. This means that every flight in the dataset originates from EWR (Newark Liberty International Airport), not JFK or LGA.
+Since all flights originate from New York City airports, we checked the map and found that only EWR is not included among NYC airports. This means that every flight in the dataset originates from EWR (Newark Liberty International Airport), not JFK or LGA.
 
 ---
 
