@@ -9,17 +9,17 @@ import seaborn as sns
 # read airports.csv
 df = pd.read_csv("../data/airports.csv") 
 
-# descriptive statistics and data preprocessing
-print("first 5 rows of the dataset:\n", df.head())  # display first few rows
-print("dataset information:")
-df.info()  # display dataset information
+# # descriptive statistics and data preprocessing
+# print("first 5 rows of the dataset:\n", df.head())  # display first few rows
+# print("dataset information:")
+# df.info()  # display dataset information
 
-print("descriptive statistics:\n", df.describe())  # display descriptive statistics
-print("missing values in each column:\n", df.isnull().sum())  # check for missing values
+# print("descriptive statistics:\n", df.describe())  # display descriptive statistics
+# print("missing values in each column:\n", df.isnull().sum())  # check for missing values
 
-# display unique time zones and their corresponding tz values
-unique_tz_mapping = df[["tzone", "tz"]].dropna().drop_duplicates()
-print(unique_tz_mapping)
+# # display unique time zones and their corresponding tz values
+# unique_tz_mapping = df[["tzone", "tz"]].dropna().drop_duplicates()
+# print(unique_tz_mapping)
 
 # inferring missing values instead of deleting them
 tf = TimezoneFinder()
@@ -27,26 +27,27 @@ df["tzone"] = df.apply(lambda row: tf.timezone_at(lng=row["lon"], lat=row["lat"]
 # update tz values based on the inferred tzone
 tz_mapping_dynamic = dict(df[["tzone", "tz"]].dropna().drop_duplicates().values)
 df["tz"] = df.apply(lambda row: tz_mapping_dynamic.get(row["tzone"], row["tz"]) if pd.isnull(row["tz"]) else row["tz"], axis=1)
+
+# Need Fix:
 # infer dst based on the most common dst setting per tzone
 dst_mapping = df.groupby("tzone")["dst"].apply(lambda x: x.mode().iloc[0] if not x.isna().all() else "N").to_dict()
-
 # fill missing dst values
 df["dst"] = df.apply(lambda row: dst_mapping.get(row["tzone"], row["dst"]) if pd.isnull(row["dst"]) else row["dst"], axis=1)
 
-# check for missing values after inference
-print("missing values after inference:\n", df.isnull().sum())
-print(df[df["tz"].isnull()])
-print(df[df["tzone"] == "America/Boise"][["tzone", "tz"]].dropna().drop_duplicates()) # check for missing values in America/Boise
-df.loc[df["tzone"] == "America/Boise", "tz"] = -7 # fix missing values in America/Boise
-print("missing values after final fix:\n", df.isnull().sum()) 
+# # check for missing values after inference
+# print("missing values after inference:\n", df.isnull().sum())
+# print(df[df["tz"].isnull()])
+# print(df[df["tzone"] == "America/Boise"][["tzone", "tz"]].dropna().drop_duplicates()) # check for missing values in America/Boise
+# df.loc[df["tzone"] == "America/Boise", "tz"] = -7 # fix missing values in America/Boise
+# print("missing values after final fix:\n", df.isnull().sum()) 
 
 # convert altitude to meters
 df["alt_meters"] = df["alt"] * 0.3048
 df["tz"] = df["tz"].astype("Int64") # convert tz to integer
-df.info()
+# df.info()
 
 # explore relationships within the dataset
-print(df.describe()) # display descriptive statistics
+# print(df.describe()) # display descriptive statistics
 # scatter plot: altitude vs latitude
 plt.figure(figsize=(10, 6))
 plt.scatter(df["lat"], df["alt_meters"], alpha=0.5, color="blue")
@@ -59,17 +60,19 @@ plt.grid(True)
 # plt.show()
 
 # print(df["dst"].unique()) # display unique values in 'dst' column 
+# print(df["tzone"].unique()) # display unique values in 'tzone' column
+# print(df["tz"].unique()) # display unique values in 'tz' column
 
 # countplot: number of airports in each time zone
 plt.figure(figsize=(10, 6))
-sns.countplot(x=df["tz"], palette="coolwarm")
+sns.countplot(x=df["tz"], hue=df["tz"], palette="coolwarm", legend=False) 
 
 plt.xlabel("Time Zone (UTC)")
 plt.ylabel("Number of Airports")
 plt.title("Number of Airports in Each Time Zone")
 plt.grid(True)
 
-# plt.show()
+plt.show()
 
 # find airports that do not observe daylight saving time, later visualizing these airports on a map
 df_no_dst = df[df["dst"] == "N"]
@@ -99,7 +102,7 @@ fig_global = px.scatter_geo(df,
                             labels={"alt_meters": "Altitude (m)"}  # Set color legend title
     )
 
-fig_global.show()
+# fig_global.show()
 
 
 # plot US airport distribution, with color coded by 'alt' (altitude)
@@ -113,5 +116,6 @@ fig_us= px.scatter_geo(df,
                         color_continuous_scale="Viridis",
                         labels={"alt_meters": "Altitude (m)"} 
                         )
-fig_us.show()
+# fig_us.show()
+
 
