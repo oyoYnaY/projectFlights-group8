@@ -90,13 +90,13 @@ plt.grid(True)
 
 # countplot: number of airports in each time zone
 plt.figure(figsize=(10, 6))
-sns.countplot(x=df["tz"], hue=df["tz"], palette="coolwarm", legend=False)
-
-plt.xlabel("Time Zone (UTC)")
+sns.countplot(x=df["tzone"], hue=df["tzone"], palette="coolwarm", legend=False)
+# sns.countplot(x=df["tz"], hue=df["tz"], palette="coolwarm", legend=False)
+plt.xlabel("Time Zone")
+plt.xticks(rotation=25, ha='right', fontsize=6)
 plt.ylabel("Number of Airports")
 plt.title("Number of Airports in Each Time Zone")
 plt.grid(True)
-
 # plt.show()
 
 # find airports that do not observe daylight saving time, later visualizing these airports on a map
