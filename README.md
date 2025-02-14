@@ -1,6 +1,6 @@
 
 ## Flights Analysis Dashboard✈️
-This project is belong to the **XB_0112 Data Engineering** group assignment. It provides an interactive dashboard to visualize airport and flight data using Python and Plotly. The dashboard includes functionalities such as global airport distribution, flight route visualization, and distance calculations.
+This project is belong to the **XB_0112 Data Engineering** group assignment. It provides an interactive dashboard to visualize airport and flight data using Python and Plotly. The dashboard includes functionalities such as ...
 ### Project Report && Project Inrtoduction
 [Project Report](project%20report.md) && [flights_part12.pdf](project_introduction/flights_part12.pdf) 
 
