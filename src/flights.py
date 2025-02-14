@@ -87,6 +87,37 @@ plt.title("Airports That Do NOT Observe DST")
 
 # plt.show()
 
+
+############################################################################################################################################################################
+# Part 1
+# visualizations
+# plot global airport distribution, with color coded by 'alt' (altitude)
+fig_global = px.scatter_geo(df, 
+                            lat="lat", lon="lon", 
+                            hover_name="name",
+                            color="alt_meters",  # color by altitude
+                            title="Global Airport Distribution (Colored by Altitude)",
+                            projection="natural earth",
+                            color_continuous_scale="Viridis",  # Choose color scale
+                            labels={"alt_meters": "Altitude (m)"}  # Set color legend title
+    )
+
+# fig_global.show()
+
+
+# plot US airport distribution, with color coded by 'alt' (altitude)
+# use scatter_geo funcion, scope="usa"
+fig_us= px.scatter_geo(df, 
+                        lat="lat", lon="lon", 
+                        hover_name="name",
+                        color="alt_meters",  # color by altitude
+                        title="us airport distribution (colored by altitude)",
+                        scope="usa",
+                        color_continuous_scale="Viridis",
+                        labels={"alt_meters": "Altitude (m)"} 
+                        )
+# fig_us.show()
+
 # analyze the distances between JFK and airports in the file
 R = 6378.1370 # in kilometeres
 jfk_data = df[df['faa'] == 'JFK']
@@ -133,36 +164,3 @@ plt.title("Distribution of the geodesic distances between the eirports and JFK")
 plt.grid(True)
 
 plt.show()
-
-
-############################################################################################################################################################################
-# Part 1
-# visualizations
-# plot global airport distribution, with color coded by 'alt' (altitude)
-fig_global = px.scatter_geo(df, 
-                            lat="lat", lon="lon", 
-                            hover_name="name",
-                            color="alt_meters",  # color by altitude
-                            title="Global Airport Distribution (Colored by Altitude)",
-                            projection="natural earth",
-                            color_continuous_scale="Viridis",  # Choose color scale
-                            labels={"alt_meters": "Altitude (m)"}  # Set color legend title
-    )
-
-# fig_global.show()
-
-
-# plot US airport distribution, with color coded by 'alt' (altitude)
-# use scatter_geo funcion, scope="usa"
-fig_us= px.scatter_geo(df, 
-                        lat="lat", lon="lon", 
-                        hover_name="name",
-                        color="alt_meters",  # color by altitude
-                        title="us airport distribution (colored by altitude)",
-                        scope="usa",
-                        color_continuous_scale="Viridis",
-                        labels={"alt_meters": "Altitude (m)"} 
-                        )
-# fig_us.show()
-
-
