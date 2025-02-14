@@ -121,8 +121,16 @@ We assume that all starting points are located at John F. Kennedy Airport in New
 #### Time Zones
 
 #### More Visualizations 
-##### Cluster
-##### Undirected Airport Graph
+#### Cluster
+<div align="center">
+  <img src="figures/Figure_6.png" alt="Figure 6: Cluster" width="55%"/>
+</div>
+
+#### Undirected Airport Graph
+<div align="center">
+  <img src="figures/Figure_7.png" alt="Figure 7: Graph" width="55%"/>
+</div>
+
 ## Dashboard Features Demo
 This part for add any ideas and build the basic demo to test your idea.
 ### Idea1-input 2 cities name, find the nearest airport to 2 given city, then plot the flight path between them
@@ -130,10 +138,17 @@ This part for add any ideas and build the basic demo to test your idea.
 plot_flight_between_cities("New York", "London")
 plot_flight_between_cities("San Francisco", "Tokyo")
 ```
+<div align="center">
+  <img src="figures/Figure_8.png" alt="Figure 8: Idea1" width="55%"/>
+</div>
+
 ### Idea2-simulate a flight from JFK to the nearest airport in each cluster
 ```python
 if __name__ == "__main__":
     app.run_server(debug=True)
 ```
+<div align="center">
+  <img src="figures/Figure_9.png" alt="Figure 9: Idea2" width="55%"/>
+</div>
 
 
