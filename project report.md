@@ -144,6 +144,7 @@ plot_flight_between_cities("San Francisco", "Tokyo")
 </div>
 
 ### Idea2-simulate a flight from JFK to the nearest airport in each cluster
+Select the nearest airports from the top ten clusters in the previous aggregation map, choosing the airport closest to the cluster center.
 ```python
 if __name__ == "__main__":
     app.run_server(debug=True)
