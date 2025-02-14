@@ -98,10 +98,21 @@ The following airports **do not observe DST** and are located in specific region
 **Airports around latitude ~20° and longitude ~-160°**, **Airports around latitude ~30-35° and longitude ~-110°**. Later can visualizing these airports on a map to see the locations.
 
 ### Visualization 
+#### World Map && US Map
 <div align="center">
   <img src="figures/Figure_5.png" alt="Figure 5: World map" width="45%"/>
   <img src="figures/Figure_4.png" alt="Figure 4: US map" width="45%"/>
 </div>
 
+By cross-validating the world map and the U.S. map, we can identify that only two airports are located outside the United States:
+Taszári Air Base (FAA: TZR) – located in Hungary
+Oryol Yuzhnyy Airport (FAA: OEL) – located in Oryol, Russia
 
+#### Plot Multiple Lines
+We assume that all starting points are located at John F. Kennedy Airport in New York City to simplify the process of drawing flight paths.
 
+#### Euclidean Distance && Geodesic Distance
+
+#### Time Zones
+
+#### More Visualizations 
