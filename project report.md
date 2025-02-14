@@ -1,6 +1,6 @@
 # Data Engineering - Project Report
 
-## Project Group Members
+### Project Group Members
 - **A. Lis (Adel), **
 - **M. Taciak (Monika), **
 - **N. Micek (Nikolina), **
@@ -121,3 +121,19 @@ We assume that all starting points are located at John F. Kennedy Airport in New
 #### Time Zones
 
 #### More Visualizations 
+##### Cluster
+##### Undirected Airport Graph
+## Dashboard Features Demo
+This part for add any ideas and build the basic demo to test your idea.
+### Idea1-input 2 cities name, find the nearest airport to 2 given city, then plot the flight path between them
+```python
+plot_flight_between_cities("New York", "London")
+plot_flight_between_cities("San Francisco", "Tokyo")
+```
+### Idea2-simulate a flight from JFK to the nearest airport in each cluster
+```python
+if __name__ == "__main__":
+    app.run_server(debug=True)
+```
+
+
