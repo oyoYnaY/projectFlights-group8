@@ -31,7 +31,12 @@ The following Python libraries were used in this project for **data processing, 
 - `matplotlib` - For descriptive statistics
 - `timezonefinder` - For inferring the missing value
 - `seaborn` - Statistical data visualization
-- ``
+- `numpy` - For numerical operations
+- `scikit-learn` - For cluster data
+- `networkx` - For building the airport network
+- `Nominatim` - For finding the nearest airport to a city
+- `dash` - Used to initially build and test dashboard concepts and functionality in a demo environment.
+- ...
   
 ### Data Cleaning
 ```python
