@@ -123,12 +123,12 @@ We assume that all starting points are located at John F. Kennedy Airport in New
 #### More Visualizations 
 #### Cluster
 <div align="center">
-  <img src="figures/Figure_6.png" alt="Cluster" width="55%"/>
+  <img src="figures/Figure_6.png" alt="Cluster" width="100%"/>
 </div>
 
 #### Undirected Airport Graph
 <div align="center">
-  <img src="figures/Figure_7.png" alt="Graph" width="55%"/>
+  <img src="figures/Figure_7.png" alt="Graph" width="100%"/>
 </div>
 
 ## Dashboard Features Demo
@@ -139,8 +139,8 @@ plot_flight_between_cities("New York", "London")
 plot_flight_between_cities("San Francisco", "Tokyo")
 ```
 <div align="center">
-  <img src="figures/Figure_8.png" alt="New York->London" width="55%"/>
-  <img src="figures/Figure_9.png" alt="San Francisco->Tokyo" width="55%"/>
+  <img src="figures/Figure_8.png" alt="New York->London" width="45%"/>
+  <img src="figures/Figure_9.png" alt="San Francisco->Tokyo" width="45%"/>
 </div>
 
 ### Idea2-simulate a flight from JFK to the nearest airport in each cluster
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     app.run_server(debug=True)
 ```
 <div align="center">
-  <img src="figures/Figure_10.png" alt="Simulate" width="55%"/>
+  <img src="figures/Figure_10.png" alt="Simulate" width="100%"/>
 </div>
 
 
