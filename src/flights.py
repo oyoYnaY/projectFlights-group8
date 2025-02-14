@@ -86,6 +86,52 @@ plt.title("Airports That Do NOT Observe DST")
 
 # plt.show()
 
+# analyze the distances between JFK and airports in the file
+R = 6378.1370 # in kilometeres
+jfk_data = df[df['faa'] == 'JFK']
+jfk_loc = [jfk_data['lat'].iloc[0], jfk_data['lon'].iloc[0]]
+df['geo_dist'] = None
+df['euc_dist'] = None
+for index, airport in df.iterrows():
+    lat_scale = 111.32  # 1 degree of latitude ≈ 111.32 km
+    lon_scale = 111.32 * math.cos(math.radians((airport['lat'] + jfk_loc[0]) / 2))  # Adjust for longitude
+    lat_diff_km = abs(airport['lat'] - jfk_loc[0]) * lat_scale
+    lon_diff_km = abs(airport['lon'] - jfk_loc[1]) * lon_scale
+    euc_distance = math.sqrt(lat_diff_km**2 + lon_diff_km**2)
+    lat1 = math.radians(jfk_loc[0])
+    lon1 = math.radians(jfk_loc[1])
+    lat2 = math.radians(airport['lat'])
+    lon2 = math.radians(airport['lon'])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    exp_one = (2*math.sin(dlat/2)*math.cos(dlon/2))**2
+    exp_two = (2*math.cos((lat1+lat2)/2)*math.sin(dlon/2))**2
+    geo_distance = R * math.sqrt(exp_one+exp_two)
+    # Store distances
+    df.at[index, 'euc_dist'] = euc_distance
+    df.at[index, 'geo_dist'] = geo_distance
+
+print(df.loc[df["euc_dist"].idxmax()])
+
+plt.figure(figsize=(10, 6))
+plt.hist(df['euc_dist'], bins = 30, alpha=0.5, color="blue")
+
+plt.xlabel("Euclidean distance")
+plt.ylabel("Count")
+plt.title("Distribution of the euclidean distances between the eirports and JFK")
+plt.grid(True)
+
+plt.show()
+
+plt.figure(figsize=(10, 6))
+plt.hist(df['geo_dist'], bins = 30, alpha=0.5, color="blue")
+
+plt.xlabel("Geodesic distance")
+plt.ylabel("Count")
+plt.title("Distribution of the geodesic distances between the eirports and JFK")
+plt.grid(True)
+
+plt.show()
 
 
 ############################################################################################################################################################################
