@@ -36,7 +36,7 @@ The following Python libraries were used in this project for **data processing, 
 - `networkx` - For building the airport network
 - `Nominatim` - For finding the nearest airport to a city
 - `dash` - Used to initially build and test dashboard concepts and functionality in a demo environment.
-- ...
+- `math` - Calculate geodesic distance
   
 ### Data Cleaning
 ```python
@@ -95,8 +95,8 @@ Most airports are **near sea level**, though a few **high-altitude airports exis
 #### To better understand the relationships between different variables, we can create several visualizations.
 <div align="center">
   <img src="figures/Figure_1.png" alt="Figure 1: Altitude vs Latitude" width="45%"/>
-  <img src="figures/Figure_2.png" alt="Figure 2: Altitude vs Latitude" width="45%"/>
-  <img src="figures/Figure_3.png" alt="Figure 3: Altitude vs Latitude" width="45%"/>
+  <img src="figures/Figure_2.png" alt="Figure 2: tz" width="45%"/>
+  <img src="figures/Figure_3.png" alt="Figure 3: dst" width="45%"/>
 </div>
 
 The following airports **do not observe DST** and are located in specific regions:  
@@ -125,9 +125,19 @@ Distances calculated manually with formulas. The output is given in kilometers.
 
 #### Time Zones
 <div align="center">
-  <img src="figures/Figure_2.png" alt="Figure 2: Altitude vs Latitude" width="55%"/>
+  <img src="figures/Figure_2.png" alt="Figure 2: tz" width="45%"/>
+  <img src="figures/Figure_11.png" alt="Figure 11: time zone" width="45%"/>
 </div>
 
+In the timezone data, most airports are located in the Eastern (America/New_York) and Central (America/Chicago) time zones, while a small number of airports are in Europe (Moscow/Budapest). The number of airports in the Western time zones (Pacific and Mountain) is relatively lower due to the vast and sparsely populated regions, which aligns with our previous map analysis.
+
+Acoording to the figure, we found 3 time zones in Alaska. America/Adak, America/Nome, America/Anchorage.
+
+Alaska (America/Anchorage) has significantly more airports than other regions, likely due to weak road infrastructure, making air travel essential for many remote areas. This has led to a high number of small regional airports and a well-developed feeder airline network.
+
+The presence of airports in the America/Indiana/Indianapolis time zone suggests historical complexities in time regulation in that region. Parts of Indiana follow independent time zone rules within the Eastern Time Zone, and America/Indiana/Indianapolis has its own time zone designation, possibly due to historical reasons.
+
+The first figure highlights airports in UTC 8. After extracting airports with tz=8, we found that all of them are in the America/Los_Angeles time zone. The correct tz value should be -8, indicating an error in the database entry.
 
 #### More Visualizations 
 #### Cluster
