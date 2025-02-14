@@ -16,8 +16,9 @@ Each row represents a **destination airport** where a flight from NYC landed. Th
 - **Airport name**
 - **Latitude & Longitude** (Geographical coordinates)
 - **Altitude** (Airport elevation in feet)
-- **Time zone** (UTC offset)
+- **Tz** (UTC offset)
 - **Daylight saving time (DST) usage**
+- **[Timezone in "tz" (Olson) format, eg. "America/Los_Angeles"]([https://www.google.com](https://en.wikipedia.org/wiki/Tz_database))**
 
 ## Project Features
 - **Global US airport distribution** – Visualize all airports on a US map.
