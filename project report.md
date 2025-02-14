@@ -122,11 +122,13 @@ We assume that all starting points are located at John F. Kennedy Airport in New
 
 #### More Visualizations 
 #### Cluster
+Use DBSCAN. Set the range is 80km.
 <div align="center">
   <img src="figures/Figure_6.png" alt="Cluster" width="100%"/>
 </div>
 
 #### Undirected Airport Graph
+Choose 5 neighbors.
 <div align="center">
   <img src="figures/Figure_7.png" alt="Graph" width="100%"/>
 </div>
