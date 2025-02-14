@@ -124,6 +124,10 @@ Distances calculated manually with formulas. The output is given in kilometers.
 </div>
 
 #### Time Zones
+<div align="center">
+  <img src="figures/Figure_2.png" alt="Figure 2: Altitude vs Latitude" width="55%"/>
+</div>
+
 
 #### More Visualizations 
 #### Cluster
