@@ -5,6 +5,7 @@ from geopy.distance import geodesic
 import matplotlib.pyplot as plt
 from timezonefinder import TimezoneFinder
 import seaborn as sns
+import math
 
 # read airports.csv
 df = pd.read_csv("../data/airports.csv") 
