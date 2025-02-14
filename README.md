@@ -7,8 +7,6 @@ This project is belong to the **XB_0112 Data Engineering** group assignment. It 
 ## Dataset Overview
 This dataset contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
 
-Since all flights originate from **New York City airports** (`EWR`- Newark Liberty International Airport), this dataset does **not** contain departure airport information—only details about where flights arrived.
-
 ---
 
 ### Dataset Fields
