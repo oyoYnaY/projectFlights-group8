@@ -2,7 +2,7 @@
 
 ### Project Group Members
 - **A. Lis (Adel), **
-- **M. Taciak (Monika), **
+- **M. Taciak (Monika), mta275**
 - **N. Micek (Nikolina), **
 - **Y. Yan (Yoyo), yyn480**
 
@@ -117,6 +117,11 @@ Oryol Yuzhnyy Airport (FAA: OEL) – located in Oryol, Russia.
 We assume that all starting points are located at John F. Kennedy Airport in New York City to simplify the process of drawing flight paths.
 
 #### Euclidean Distance && Geodesic Distance
+Distances calculated manually with formulas. The output is given in kilometers.
+<div align="center">
+  <img src="figures/euc_dist_hist.png" alt="Histogram of the euclidean distances between airports in the list and JFK" width="45%"/>
+  <img src="figures/geodesic_dist_hist.png" alt="Histogram of the geodesic distances between airports in the list and JFK" width="45%"/>
+</div>
 
 #### Time Zones
 
