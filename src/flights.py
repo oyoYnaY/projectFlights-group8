@@ -43,21 +43,20 @@ df["tz"] = df.apply(
     axis=1,
 )
 
-# Need Fix:
 # infer dst based on the most common dst setting per tzone
-dst_mapping = (
-    df.groupby("tzone")["dst"]
-    .apply(lambda x: x.mode().iloc[0] if not x.isna().all() else "N")
-    .to_dict()
-)
-# fill missing dst values
+def infer_dst_from_tzone(tzone):
+    if pd.isnull(tzone):
+        return 'N'
+    if "America/" in tzone:
+        return 'A'
+    elif "Europe/" in tzone:
+        return 'E'
+    else:
+        return 'N'
+
 df["dst"] = df.apply(
-    lambda row: (
-        dst_mapping.get(row["tzone"], row["dst"])
-        if pd.isnull(row["dst"])
-        else row["dst"]
-    ),
-    axis=1,
+    lambda row: row["dst"] if pd.notnull(row["dst"]) else infer_dst_from_tzone(row["tzone"]),
+    axis=1
 )
 
 # # check for missing values after inference
