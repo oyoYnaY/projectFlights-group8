@@ -152,6 +152,25 @@ Choose 5 neighbors.
   <img src="figures/Figure_7.png" alt="Graph" width="100%"/>
 </div>
 
+In the current DBSCAN results with an 80km radius:
+
+Texas (Houston, Dallas) forms multiple clusters.
+The East Coast has several dense clusters.
+The West Coast (Los Angeles, San Francisco) does not form dense clusters.
+This may be related to economic patterns and industry structure:
+
+East Coast & Texas → High economic activity areas
+
+New York (JFK, LGA, EWR) is one of the world's largest financial centers, with extremely high economic activity and a dense network of surrounding airports.
+Texas (Dallas, Houston) is an energy hub with strong business connections, leading to a dense airport network.
+Major East Coast cities (Boston, Philadelphia, Washington, etc.) have a high concentration of commercial flights, resulting in high airport density.
+West Coast (California) → Fewer airports but stronger hubs
+
+The number of airports is smaller, but they serve as major hubs.
+Due to the greater distances between cities in California, airports are not as densely packed as in New York or Texas.
+In DBSCAN clustering, they are more likely to be classified as outliers rather than clusters.
+The results of the undirected airport network graph are similar to the DBSCAN clustering results.
+
 ## Dashboard Features Demo
 This part for add any ideas and build the basic demo to test your idea.
 ### Idea1-input 2 cities name, find the nearest airport to 2 given city, then plot the flight path between them
