@@ -3,7 +3,7 @@
 ### Project Group Members
 - **A. Lis (Adel), **
 - **M. Taciak (Monika), mta275**
-- **N. Micek (Nikolina), **
+- **N. Micek (Nikolina), nmk490**
 - **Y. Yan (Yoyo), yyn480**
 
 ---
