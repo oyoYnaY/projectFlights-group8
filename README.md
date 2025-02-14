@@ -42,11 +42,11 @@ myenv\Scripts\activate     # virtual environment on Windows
 
 ### Download libary
 ```bash
-pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash
+pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math
 ```
 If you use Jupyter Notebook or Google Colab
 ```bash
-!pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash
+!pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math
 ```
 ### Run
 ```bash
