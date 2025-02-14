@@ -105,8 +105,8 @@ The following airports **do not observe DST** and are located in specific region
 </div>
 
 By cross-validating the world map and the U.S. map, we can identify that only two airports are located outside the United States:
-Taszári Air Base (FAA: TZR) – located in Hungary
-Oryol Yuzhnyy Airport (FAA: OEL) – located in Oryol, Russia
+Taszári Air Base (FAA: TZR) – located in Hungary.
+Oryol Yuzhnyy Airport (FAA: OEL) – located in Oryol, Russia.
 
 #### Plot Multiple Lines
 We assume that all starting points are located at John F. Kennedy Airport in New York City to simplify the process of drawing flight paths.
