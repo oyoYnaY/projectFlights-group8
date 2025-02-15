@@ -225,3 +225,17 @@ if __name__ == "__main__":
 <div align="center">
   <img src="figures/Figure_10.png" alt="Simulate" width="100%"/>
 </div>
+
+### Idea3-for each flight, compute the the compass direction from NYC to the destination airport, and examine the directional distribution of the departing flights.
+
+Compute the direction (in degrees °) of each route leaving from NYC and show the distribution over a polar histogram.
+The study reveals the most used directions and therefore destinations from NYC.
+
+```python
+df_dest['bearing'] = df_dest.apply(lambda row: calculate_bearing(nyc_lat, nyc_lon, row['lat'], row['lon']), axis=1)
+```
+
+<div align="center">
+  <img src="figures/Figure_12.png" alt="New York->London" width="85%"/>
+  <img src="figures/Figure_13.png" alt="San Francisco->Tokyo" width="85%"/>
+</div>
