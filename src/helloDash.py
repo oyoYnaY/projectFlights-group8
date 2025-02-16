@@ -11,7 +11,7 @@ import base64 # for using png image as ui
 
 # read airports.csv
 df = pd.read_csv("../data/airports.csv")
-CSV_FILE_PATH = "../data/airports.csv"  # path to rewrite the CSV file
+CSV_FILE_PATH = "../data/airports.csv"  # path to add new data to the orgin dataset
 
 # inferring missing values instead of deleting them
 tf = TimezoneFinder()
