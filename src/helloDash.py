@@ -473,3 +473,4 @@ else:
         st.plotly_chart(fig_scatter, use_container_width=True)
         
     display_visualizations(filtered_df)
+    
