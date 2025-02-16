@@ -160,7 +160,10 @@ Alaska (America/Anchorage) has significantly more airports than other regions, l
 
 The presence of airports in the America/Indiana/Indianapolis time zone suggests historical complexities in time regulation in that region. Parts of Indiana follow independent time zone rules within the Eastern Time Zone, and America/Indiana/Indianapolis has its own time zone designation, possibly due to historical reasons.
 
-The first figure highlights airports in UTC 8. After extracting airports with tz=8, we found that all of them are in the America/Los_Angeles time zone. The correct tz value should be -8, indicating an error in the database entry.
+The first figure highlights airports in UTC 8. After extracting airports with tz=8, we found that all of them are in the America/Los_Angeles time zone. The correct tz value should be -8, indicating an error in the database entry. Then we replaced 8 to -8.
+```python
+df.loc[df['tz'] == 8, 'tz'] = -8 # fix incorrect tz value
+```
 
 #### More Visualizations
 
