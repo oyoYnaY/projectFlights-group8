@@ -20,7 +20,7 @@
 | `alt`      | **Altitude** (Elevation of the airport in feet)                    | `20`                                    | `int64 `      |
 | `tz`       | **Time Zone Offset** (Relative to UTC)                             | `-5` (Apalachicola in UTC-5)            | `float64`     |
 | `dst`      | **Daylight Saving Time (DST) Usage**                               | `"A"` (Active, follows DST)             | `object`      |
-| `tzone`    | **Timezone in "tz" (Olson) format**                                | `"America/New_York"`                    | `object`      |
+| `tzone`    | **[Timezone in "tz" (Olson) format](https://en.wikipedia.org/wiki/Tz_database)** | `"America/New_York"`      | `object`      |
 
 ---
 
