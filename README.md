@@ -5,27 +5,35 @@ This project is belong to the **XB_0112 Data Engineering** group assignment. It 
 [Project Report](project%20report.md) && [flights_part12.pdf](project_introduction/flights_part12.pdf) 
 
 ## Dataset Overview
-This dataset contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
+**airports.csv** contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
 
----
-
-### Dataset Fields
-This dataset contains **information on all destination airports** for flights departing from **New York City in 2023**.  
-Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as:
-- **FAA code** (Three-letter airport code)
-- **Airport name**
-- **Latitude & Longitude** (Geographical coordinates)
-- **Altitude** (Airport elevation in feet)
-- **Tz** (UTC offset)
-- **Daylight saving time (DST) usage**
-- **[Timezone in "tz" (Olson) format, eg. "America/Los_Angeles"](https://en.wikipedia.org/wiki/Tz_database)**
+**worldcities.csv** contains over 4 million unique cities and towns from every country in the world. [Source](https://simplemaps.com/data/world-cities)
 
 
 ## Project Features
-- **Global US airport distribution** – Visualize all airports on a US map.
-- **Flight route visualization** – Display routes between New York and other airports.
-- **Distance calculations** – Compute Euclidean and geodesic distances.
-- ...(update later)
+* **Multi-Language Support**
+  * The interface supports English, Chinese, Croatian, and Dutch. Users can switch languages in real time, with all interface text dynamically updated through a translation table.
+* **Multi-Page Switching**
+  * Two main pages are provided:
+    * **Dashboard:** Displays airport data, map visualizations, flight path and flight time estimations, and various data statistics.
+    * **New Data Entry:** Allows users to input new airport data, which is updated and displayed in real time during the current session.
+* **Map Visualization and Flight Path Simulation**
+  * Utilizes Plotly's Scatter Mapbox to render a map showing airport locations.
+  * Based on the user's input for departure and arrival cities, the system automatically calculates the nearest airports, the flight path distance, and the estimated flight time, then displays the flight progress on the map in real time (to speed up execution, world city coordinates have been added from **worldcities.csv**. [Data Source](https://simplemaps.com/data/world-cities)).
+* **Data Statistics and Dynamic Visualizations**
+  * Provides multiple statistical charts:
+    * Altitude distribution histogram
+    * Time zone distribution histogram
+    * Scatter plot of altitude vs. distance
+  * These visualizations help users intuitively understand the distribution and characteristics of the airport data.
+* **Data Entry**
+  * New data is entered via a form.
+  * The new data is stored in `session_state` and merged with the original data for display on the Dashboard.
+* **Data Query**
+  * Users can input an FAA code or airport name to retrieve the full row of information. Fuzzy search allows users to query without needing an exact match.
+* **Interactive Sidebar Control**
+  * The sidebar includes built-in controls for airport queries, map mode switching (US/World), time zone filtering, and more, allowing users to easily adjust and query the displayed map content.
+
 
 ## Installation & Setup
 ### Clone the repository
@@ -44,15 +52,19 @@ myenv\Scripts\activate     # virtual environment on Windows
 
 ### Download libary
 ```bash
-pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math
+pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math streamlit base64
 ```
 If you use Jupyter Notebook or Google Colab
 ```bash
-!pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math
+!pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math streamlit base64
 ```
 ### Run
 ```bash
 python3 flights.py
+```
+**Run the dashboard on your own machine**
+```bash
+streamlit run dashboard.py
 ```
 
 ### Project Structure
