@@ -1,19 +1,6 @@
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-from geopy.distance import geodesic
-import matplotlib.pyplot as plt
 from timezonefinder import TimezoneFinder
-import seaborn as sns
-import numpy as np 
-import math 
-from sklearn.cluster import DBSCAN 
-from geopy.distance import great_circle
-from sklearn.neighbors import NearestNeighbors
-import networkx as nx 
-from geopy.geocoders import Nominatim 
-import dash
-from dash import dcc, html
 import streamlit as st
 import geopy.distance  # for calculating geodesic distance
 import base64 # for using png image as ui
