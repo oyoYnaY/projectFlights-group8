@@ -1,6 +1,6 @@
 
 ## Flights Analysis Dashboard✈️
-This project is belong to the **XB_0112 Data Engineering** group assignment. It provides an interactive dashboard to visualize airport and flight data using Python and Plotly. The dashboard includes functionalities such as ...
+This project, developed by the **XB_0112 Data Engineering** group 8, provides an interactive dashboard built with Python and Streamlit to visualize airport and flight data—with features including multi-language support, multi-page switching, real-time map visualization and flight path simulation using world city coordinates from worldcities.csv, dynamic data statistics, real-time data entry and query capabilities, and interactive sidebar controls.
 ### Project Report && Project Inrtoduction
 [Project Report](project%20report.md) && [flights_part12.pdf](project_introduction/flights_part12.pdf) 
 
