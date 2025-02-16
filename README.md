@@ -64,7 +64,7 @@ python3 flights.py
 ```
 **Run the dashboard on your own machine**
 ```bash
-streamlit run dashboard.py
+streamlit run helloDash.py
 ```
 
 ### Project Structure
