@@ -1,8 +1,11 @@
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+from geopy.distance import geodesic
+import matplotlib.pyplot as plt
 from timezonefinder import TimezoneFinder
 import streamlit as st
-import geopy.distance  # for calculating geodesic distance
+import geopy.distance  
 import base64 # for using png image as ui
 
 
