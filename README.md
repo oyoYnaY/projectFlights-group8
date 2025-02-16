@@ -19,7 +19,7 @@ This project is belong to the **XB_0112 Data Engineering** group assignment. It 
     * **New Data Entry:** Allows users to input new airport data, which is updated and displayed in real time during the current session.
 * **Map Visualization and Flight Path Simulation**
   * Utilizes Plotly's Scatter Mapbox to render a map showing airport locations.
-  * Based on the user's input for departure and arrival cities, the system automatically calculates the nearest airports, the flight path distance, and the estimated flight time, then displays the flight progress on the map in real time (to speed up execution, world city coordinates have been added from **worldcities.csv**. [Data Source](https://simplemaps.com/data/world-cities)).
+  * Based on the user's input for departure and arrival cities, the system automatically calculates the nearest airports, the flight path distance, and the estimated flight time, then displays the flight progress on the map in real time (Due to performance limitations, We use worldcities.csv to read the coordinates directly from it. World city coordinates added from **worldcities.csv**. [Data Source](https://simplemaps.com/data/world-cities)).
 * **Data Statistics and Dynamic Visualizations**
   * Provides multiple statistical charts:
     * Altitude distribution histogram
