@@ -39,7 +39,7 @@ The following Python libraries were used in this project for **data processing, 
 - `networkx` - For building the airport network
 - `Nominatim` - For finding the nearest airport to a city
 - `dash` - Used to initially build and test dashboard concepts and functionality in a demo environment.
-- `math` - Calculate geodesic distance
+- `math` - Calculate distance
 
 ### Data Cleaning
 
