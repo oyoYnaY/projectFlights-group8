@@ -35,7 +35,13 @@ This project, developed by the **XB_0112 Data Engineering** group 8, provides an
 * **Interactive Sidebar Control**
   * The sidebar includes built-in controls for airport queries, map mode switching (US/World), time zone filtering, and more, allowing users to easily adjust and query the displayed map content.
 
-
+**Future Tasks:**
+- Write processed data into a database.
+- Modify the dashboard to read data directly from the database and update it with new user input in real time.
+- Add functionality to delete data from the database via the dashboard.
+- Incorporate additional dynamic and static visualizations.
+- Enhance the UI design for a more appealing look.
+- Integrate more Streamlit widgets and/or add new pages for expanded functionality.
 ## Installation & Setup
 ### Clone the repository
 ```bash
