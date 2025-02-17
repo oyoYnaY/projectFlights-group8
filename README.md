@@ -42,6 +42,7 @@ This project, developed by the **XB_0112 Data Engineering** group 8, provides an
 - Incorporate additional dynamic and static visualizations.
 - Enhance the UI design for a more appealing look.
 - Integrate more Streamlit widgets and/or add new pages for expanded functionality.
+- Update language list for new functionalities.
 ## Installation & Setup
 ### Clone the repository
 ```bash
