@@ -20,6 +20,7 @@ This project, developed by the **XB_0112 Data Engineering** group 8, provides an
 * **Map Visualization and Flight Path Simulation**
   * Utilizes Plotly's Scatter Mapbox to render a map showing airport locations.
   * Based on the user's input for departure and arrival cities, the system automatically calculates the nearest airports, the flight path distance, and the estimated flight time, then displays the flight progress on the map in real time (Due to performance limitations, We use worldcities.csv to read the coordinates directly from it. World city coordinates added from **worldcities.csv**. [Data Source](https://simplemaps.com/data/world-cities)).
+  * **Note: Because airports.csv only contains 1251 airports, when you input arbitrary two city names, it may result in the same nearest airport being returned, causing a calculation error in the system.**
 * **Data Statistics and Dynamic Visualizations**
   * Provides multiple statistical charts:
     * Altitude distribution histogram
