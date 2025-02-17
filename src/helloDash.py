@@ -239,7 +239,7 @@ translations = {
 }
 
 def t(key, lang):
-    # return the translation if available, otherwise return the key
+    # return the translation if available
     return translations[key].get(lang, key)
 
 # main page layout, language and page selection
@@ -353,7 +353,7 @@ else:
             st.sidebar.write(query_result)
         else:
             st.sidebar.warning(t("query_invalid", selected_language))
-    # select the default map type and time zone
+    # select the map type and time zone
     map_type = st.sidebar.radio(t("select_default_map_type", selected_language), ["US", "World"])
     tz_options = ['All'] + sorted(df['tz'].unique())
     # select the time zone
@@ -372,10 +372,8 @@ else:
             st.sidebar.markdown(f"{t('nearest_airport_2', selected_language)} {airport_2['name']} ({airport_2['faa']})")
             st.sidebar.markdown(f"{t('distance', selected_language)} {distance_km:.2f} km")
             st.sidebar.markdown(f"{t('estimated_flight_time', selected_language)} {flight_time_hr:.2f} hours")
-            # display the map with the flight path and airplane image
-            map_mode = st.sidebar.radio(t("select_map_mode", selected_language), ["US", "World"], index=0)
-            center_coords = {"lat": 37.0902, "lon": -95.7129} if map_mode == "US" else {"lat": 20, "lon": 0}
-            zoom_level = 2.7 if map_mode == "US" else 1
+            center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 20, "lon": 0}
+            zoom_level = 2.7 if map_type == "US" else 1
             # flight progress slider, calculate the current coordinates based on the progress
             flight_progress = st.sidebar.slider(t("flight_progress", selected_language), 0.0, flight_time_hr, 0.0, step=0.1)
             progress_ratio = flight_progress / flight_time_hr if flight_time_hr > 0 else 0
@@ -459,3 +457,4 @@ else:
         st.plotly_chart(fig_scatter, use_container_width=True)
         
     display_visualizations(filtered_df)
+    
