@@ -5,13 +5,12 @@ from geopy.distance import geodesic
 import matplotlib.pyplot as plt
 from timezonefinder import TimezoneFinder
 import streamlit as st
-import geopy.distance  
-import base64 # for using png image as ui
-
+import geopy.distance
+import base64
 
 # read airports.csv
 df = pd.read_csv("../data/airports.csv")
-CSV_FILE_PATH = "../data/airports.csv"  # path to add new data to the orgin dataset
+CSV_FILE_PATH = "../data/airports.csv"  # path to rewrite the CSV file for future use
 
 # inferring missing values instead of deleting them
 tf = TimezoneFinder()
@@ -33,11 +32,10 @@ df["tz"] = df.apply(
     ),
     axis=1,
 )
-
 # infer dst based on the most common dst setting per tzone
 def infer_dst_from_tzone(tzone):
     if pd.isnull(tzone):
-        return 'N'
+        return 'U'
     if "America/" in tzone:
         return 'A'
     elif "Europe/" in tzone:
@@ -45,19 +43,13 @@ def infer_dst_from_tzone(tzone):
     else:
         return 'N'
 
-df["dst"] = df.apply(
-    lambda row: row["dst"] if pd.notnull(row["dst"]) else infer_dst_from_tzone(row["tzone"]),
-    axis=1
-)
-
+df["dst"] = df.apply(lambda row: row["dst"] if pd.notnull(row["dst"]) else infer_dst_from_tzone(row["tzone"]),axis=1)
 df.loc[df["tzone"] == "America/Boise", "tz"] = -7 # fix missing values in America/Boise
 df.loc[df['tz'] == 8, 'tz'] = -8 # fix incorrect tz value
 
-# convert altitude to meters
-df["alt_meters"] = df["alt"] * 0.3048
 df["tz"] = df["tz"].astype("Int64")  # convert tz to integer
 
-#dashboard
+# =============== dashboard =================
 # page layout
 st.set_page_config(layout="wide")
 
@@ -250,7 +242,7 @@ def t(key, lang):
     # return the translation if available, otherwise return the key
     return translations[key].get(lang, key)
 
-# main page layout
+# main page layout, language and page selection
 col_lang, col_page = st.columns(2)
 with col_lang:
     selected_language = st.selectbox(
@@ -294,27 +286,28 @@ def find_nearest_airport(city_name, df):
     df["distance_to_city"] = df.apply(lambda row: haversine_distance(city_coords, (row["lat"], row["lon"])), axis=1)
     return df.loc[df["distance_to_city"].idxmin()]
 
-df = df.copy()
+df = df.copy() # make a copy of the dataframe to avoid SettingWithCopyWarning
 
-# page switch
+# if the user selects the new data entry page
 if selected_page == t("new_data_entry", selected_language):
     st.subheader(t("add_new_airport", selected_language))
 
     # storing new airports in session state
     if "new_airports" not in st.session_state:
         st.session_state["new_airports"] = []
-
+    # form to add a new airport
     with st.form("airport_form"):
         faa_val = st.text_input("FAA Code (3 letters)", "")
         name_val = st.text_input("Airport Name", "")
         lat_val = st.number_input("Latitude", value=0.0, format="%.6f")
         lon_val = st.number_input("Longitude", value=0.0, format="%.6f")
-        alt_val = st.number_input("Altitude (meter)", value=0, step=1)
+        alt_val = st.number_input("Altitude (feet)", value=0, step=1)
         tz_val = st.number_input("Time Zone Offset", value=0, step=1)
         dst_val = st.text_input("DST Usage (e.g. A, N, E...)", "")
         tzone_val = st.text_input("Timezone (Olson)", "")
 
-        submitted = st.form_submit_button(t("submit_airport", selected_language))
+        submitted = st.form_submit_button(t("submit_airport", selected_language)) # submit button
+        # if the form is submitted, add the new airport to the session state
         if submitted:
             new_airport = {
                 "faa": faa_val.strip(),
@@ -328,22 +321,23 @@ if selected_page == t("new_data_entry", selected_language):
             }
             st.session_state["new_airports"].append(new_airport)
             st.success(t("new_airport_added", selected_language))
-
+    # if the user has added new airports, display them in a dataframe, otherwise show a message
     if st.session_state["new_airports"]:
         st.subheader(t("new_data_entry", selected_language))
         new_df = pd.DataFrame(st.session_state["new_airports"])
         st.dataframe(new_df)
     else:
         st.info(t("no_new_airports", selected_language))
-        
+    # show a note about session state, that new data will disappear if the page is refreshed 
     st.info(t("note_session", selected_language))
 
 else:
-    # first check if there are new airports to add
+    # if the user selects the dashboard page, display the dashboard
+    # if new airports have been added, append them to the main dataframe
     if "new_airports" in st.session_state and st.session_state["new_airports"]:
         new_df = pd.DataFrame(st.session_state["new_airports"])
         df = pd.concat([df, new_df], ignore_index=True)
-        
+    # sidebar for flight information 
     st.sidebar.title(t("project_flight_title", selected_language))
     destination_1 = st.sidebar.text_input(t("enter_departure_city", selected_language), key="destination_1")
     destination_2 = st.sidebar.text_input(t("enter_arrival_city", selected_language), key="destination_2")
@@ -359,41 +353,42 @@ else:
             st.sidebar.write(query_result)
         else:
             st.sidebar.warning(t("query_invalid", selected_language))
-    
+    # select the default map type and time zone
     map_type = st.sidebar.radio(t("select_default_map_type", selected_language), ["US", "World"])
     tz_options = ['All'] + sorted(df['tz'].unique())
+    # select the time zone
     selected_tz = st.sidebar.selectbox(t("select_time_zone", selected_language), options=tz_options, index=0)
     filtered_df = df if selected_tz == 'All' else df[df['tz'] == selected_tz]
-
+    # if the user has entered two cities, calculate the nearest airports and display the flight path
     if destination_1 and destination_2:
         airport_1 = find_nearest_airport(destination_1, df)
         airport_2 = find_nearest_airport(destination_2, df)
-        
+        # if both airports are found, calculate the distance and flight time
         if airport_1 is not None and airport_2 is not None:
             distance_km = haversine_distance((airport_1['lat'], airport_1['lon']), (airport_2['lat'], airport_2['lon']))
             flight_time_hr = distance_km / 600.0
-            
+            # display the nearest airports, distance, and estimated flight time
             st.sidebar.markdown(f"{t('nearest_airport_1', selected_language)} {airport_1['name']} ({airport_1['faa']})")
             st.sidebar.markdown(f"{t('nearest_airport_2', selected_language)} {airport_2['name']} ({airport_2['faa']})")
             st.sidebar.markdown(f"{t('distance', selected_language)} {distance_km:.2f} km")
             st.sidebar.markdown(f"{t('estimated_flight_time', selected_language)} {flight_time_hr:.2f} hours")
-
+            # display the map with the flight path and airplane image
             map_mode = st.sidebar.radio(t("select_map_mode", selected_language), ["US", "World"], index=0)
             center_coords = {"lat": 37.0902, "lon": -95.7129} if map_mode == "US" else {"lat": 20, "lon": 0}
             zoom_level = 2.7 if map_mode == "US" else 1
-
+            # flight progress slider, calculate the current coordinates based on the progress
             flight_progress = st.sidebar.slider(t("flight_progress", selected_language), 0.0, flight_time_hr, 0.0, step=0.1)
             progress_ratio = flight_progress / flight_time_hr if flight_time_hr > 0 else 0
             current_lat = airport_1['lat'] + progress_ratio * (airport_2['lat'] - airport_1['lat'])
             current_lon = airport_1['lon'] + progress_ratio * (airport_2['lon'] - airport_1['lon'])
-
+            # Mapbox plot with the flight path and airplane image
             fig = px.scatter_mapbox(
                 filtered_df,
                 lat="lat", lon="lon",
                 color="alt", color_continuous_scale="viridis",
                 size_max=10, zoom=zoom_level, center=center_coords,
                 mapbox_style="open-street-map", opacity=0.7
-            )
+            ) 
             fig.add_trace(go.Scattermapbox(
                 mode="lines",
                 lon=[airport_1['lon'], airport_2['lon']],
@@ -424,8 +419,9 @@ else:
                     ]
                 )
             ) 
-        st.plotly_chart(fig, use_container_width=True, key=f"map-{destination_1}-{destination_2}")
-    else:
+        st.plotly_chart(fig, use_container_width=True, key=f"map-{destination_1}-{destination_2}") # display the map
+    # if the user has not entered two cities, display the default map
+    else: 
         center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 50, "lon": -90}
         zoom_level = 2.5 if map_type == "US" else 1.2
         fig_default = px.scatter_mapbox(
@@ -436,7 +432,7 @@ else:
         )
         fig_default.update_layout(coloraxis_colorbar=dict(title="Altitude"))
         st.plotly_chart(fig_default, use_container_width=True, key="default-map")
-
+    # display the airport data analysis section, use the filtered dataframe
     def display_visualizations(data):
         col1, col2 = st.columns(2)
         with col1:
@@ -463,4 +459,3 @@ else:
         st.plotly_chart(fig_scatter, use_container_width=True)
         
     display_visualizations(filtered_df)
-    
