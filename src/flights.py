@@ -7,6 +7,8 @@ from timezonefinder import TimezoneFinder
 import seaborn as sns
 import math
 
+
+# =============== Data processing =============== 
 # read airports.csv
 df = pd.read_csv("../data/airports.csv")
 
@@ -46,7 +48,7 @@ df["tz"] = df.apply(
 # infer dst based on the most common dst setting per tzone
 def infer_dst_from_tzone(tzone):
     if pd.isnull(tzone):
-        return 'N'
+        return 'U'
     if "America/" in tzone:
         return 'A'
     elif "Europe/" in tzone:
@@ -112,8 +114,7 @@ plt.title("Airports That Do NOT Observe DST")
 # plt.show()
 
 
-############################################################################################################################################################################
-# Part 1
+# =============== Part 1 =============== 
 # visualizations
 # plot global airport distribution, with color coded by 'alt' (altitude)
 fig_global = px.scatter_geo(df, 
