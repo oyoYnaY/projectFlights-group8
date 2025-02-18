@@ -289,11 +289,12 @@ Weather Table (`weather`)
 
 ---
 
-### Data Cleaning
 
-### ...
+### Verify the distances
+...
 
 
+### Extract NYC airports
 
 
 
