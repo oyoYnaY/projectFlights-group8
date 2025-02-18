@@ -8,7 +8,7 @@ import seaborn as sns
 import math
 
 
-# =============== Data processing =============== 
+# =============== Data processing for airports.csv =============== 
 # read airports.csv
 df = pd.read_csv("../data/airports.csv")
 
@@ -114,7 +114,7 @@ plt.title("Airports That Do NOT Observe DST")
 # plt.show()
 
 
-# =============== Part 1 =============== 
+# =============== Part 1,2 =============== 
 # visualizations
 # plot global airport distribution, with color coded by 'alt' (altitude)
 fig_global = px.scatter_geo(df, 
@@ -260,4 +260,9 @@ def plot_flight_route(faa_code):
 # plot_flight_route("LAX")
 # plot_flight_route("HNL")  # the flight route line is broken
 # plot_flight_route("TZR")
+
+
+# =============== Data processing for flights_database.db =============== 
+
+# =============== Part 3 =============== 
 
