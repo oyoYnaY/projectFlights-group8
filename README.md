@@ -5,9 +5,17 @@ This project, developed by the **XB_0112 Data Engineering** group 8, provides an
 [Project Report](project%20report.md) && [flights_part12.pdf](project_introduction/flights_part12.pdf) 
 
 ## Dataset Overview
-**airports.csv** contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
+`flights_database.db` is an **SQLite database** containing all flights departing from **New York City (NYC)** in **2023**, along with relevant information. The database consists of the following **five tables**: 
+* airlines : contains information of the airlines operating from NYC.
+* airports
+* flights : A very large table containing all (425,352) flights departing NYC in
+2023 including flight information.
+* planes : Information on the planes used.
+* weather : hour-by-hour information on the weather in 2023.
 
-**worldcities.csv** contains over 4 million unique cities and towns from every country in the world. [Source](https://simplemaps.com/data/world-cities)
+`airports.csv` contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
+
+`worldcities.csv` contains over 4 million unique cities and towns from every country in the world. [Source](https://simplemaps.com/data/world-cities)
 
 
 ## Project Features
