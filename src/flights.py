@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from timezonefinder import TimezoneFinder
 import seaborn as sns
 import math
+import sqlite3
 
 
 # =============== Data processing for airports.csv =============== 
@@ -265,4 +266,55 @@ def plot_flight_route(faa_code):
 # =============== Data processing for flights_database.db =============== 
 
 # =============== Part 3 =============== 
+# verify the distances 
+# database_path 
+db_path = "../flights_database.db"
 
+# transform calculate_geo_distance function to a function that can be used in SQL queries
+def compute_geo_distance(lat1, lon1, lat2, lon2):
+    R = 6378.1370 
+    # geo_distance
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    exp_one = (2 * math.sin(dlat / 2) * math.cos(dlon / 2)) ** 2
+    exp_two = (2 * math.cos((lat1 + lat2) / 2) * math.sin(dlon / 2)) ** 2
+    geo_distance = R * math.sqrt(exp_one + exp_two)
+    return geo_distance
+
+# connect to the database
+with sqlite3.connect(db_path) as conn:
+    cursor = conn.cursor()
+    
+    # query the first 200 flights with origin and destination airport coordinates
+    cursor.execute("""
+        SELECT f.origin, f.dest, f.distance, a1.lat, a1.lon, a2.lat, a2.lon
+        FROM flights AS f
+        JOIN airports AS a1 ON f.origin = a1.faa
+        JOIN airports AS a2 ON f.dest = a2.faa
+        LIMIT 200;
+    """)
+    flights_data = cursor.fetchall()
+
+# calculate the geo and database distances for each flight
+geo_distances = []
+db_distances = []
+indices = []
+
+for i, (origin, dest, db_distance, lat1, lon1, lat2, lon2) in enumerate(flights_data):
+    geo_distance = compute_geo_distance(lat1, lon1, lat2, lon2)
+    geo_distances.append(geo_distance)
+    db_distances.append(db_distance * 1.60934)  # convert miles to kilometers
+    indices.append(i)
+
+# plot the computed and database distances for the first 200 flights
+plt.figure(figsize=(12, 6))
+plt.plot(indices, geo_distances, label="Calculated Distance (km)", linestyle="-")
+plt.plot(indices, db_distances, label="Database Distance (km)", linestyle="--")
+plt.xlabel("Flight Index")
+plt.ylabel("Distance (km)")
+plt.title("Comparison of Computed vs. Database Flight Distances (First 200 Flights)")
+plt.legend()
+# plt.show()
+
+conn.close()
