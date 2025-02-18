@@ -68,6 +68,8 @@ df["dst"] = df.apply(
 # df.loc[df["tzone"] == "America/Boise", "tz"] = -7 # fix missing values in America/Boise
 # print("missing values after final fix:\n", df.isnull().sum())
 
+df.loc[df['tz'] == 8, 'tz'] = -8 # fix incorrect tz value
+
 # convert altitude to meters
 df["alt_meters"] = df["alt"] * 0.3048
 df["tz"] = df["tz"].astype("Int64")  # convert tz to integer
