@@ -206,7 +206,7 @@ The results of the undirected airport network graph are similar to the DBSCAN cl
 ## Part 3
 ### Data Fields
 
-### Flights Table (`flights`)
+Flights Table (`flights`)
 | **Field Name**      | **Data Type** | **Description** |
 |---------------------|--------------|----------------|
 | `year`             | INTEGER      | Year of the flight (typically 2023) |
@@ -231,7 +231,7 @@ The results of the undirected airport network graph are similar to the DBSCAN cl
 
 ---
 
-###  Airlines Table (`airlines`)
+Airlines Table (`airlines`)
 | **Field Name** | **Data Type** | **Description** |
 |---------------|--------------|----------------|
 | `carrier`     | TEXT         | **Airline carrier code** (e.g., `AA`, `DL`) |
@@ -239,7 +239,7 @@ The results of the undirected airport network graph are similar to the DBSCAN cl
 
 ---
 
-###  Airports Table (`airports`)
+Airports Table (`airports`)
 | **Field Name** | **Data Type** | **Description** |
 |--------------|--------------|----------------|
 | `faa`       | TEXT         | **Airport code** (e.g., `JFK`, `LGA`, `EWR`) |
@@ -253,7 +253,7 @@ The results of the undirected airport network graph are similar to the DBSCAN cl
 
 ---
 
-###  Planes Table (`planes`)
+Planes Table (`planes`)
 | **Field Name**   | **Data Type** | **Description** |
 |----------------|--------------|----------------|
 | `tailnum`      | TEXT         | **Aircraft registration number** (e.g., `N12345`) |
@@ -268,7 +268,7 @@ The results of the undirected airport network graph are similar to the DBSCAN cl
 
 ---
 
-###  Weather Table (`weather`)
+Weather Table (`weather`)
 | **Field Name**  | **Data Type** | **Description** |
 |---------------|--------------|----------------|
 | `origin`     | TEXT         | **Airport code** (e.g., `JFK`, `LGA`, `EWR`) |
