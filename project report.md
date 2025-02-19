@@ -137,6 +137,10 @@ Oryol Yuzhnyy Airport (FAA: OEL) – located in Oryol, Russia.
 
 We assume that all starting points are located at John F. Kennedy Airport in New York City to simplify the process of drawing flight paths.
 
+<div align="center">
+  <img src="figures/Figure_15.png" alt="Figure 15: Multiple Lines" width="55%"/>
+</div>
+
 #### Euclidean Distance && Geodesic Distance
 
 Distances calculated manually with formulas. The output is given in kilometers.
@@ -290,19 +294,55 @@ Weather Table (`weather`)
 ---
 
 
-### Verify the distances
+### Verify the Distances
+
+<div align="center">
+  <img src="figures/Figure_14.png" alt="Figure 14: Comparison of Computed vs. Database Flight Distances (First 200 Flights)" width="55%"/>
+</div>
+We selected the first 200 flights, and we got the same result.
+
+### Extract NYC Airports
+```python
+print(df_unique_origins)
+```
+
+| **FAA** | **Name**                                   | **Latitude (lat)** | **Longitude (lon)** | **Altitude (alt, ft)** | **Time Zone (tz, UTC)** | **DST** | **Time Zone Name**        |
+|---------|---------------------------------------------|---------------------|----------------------|------------------------|-------------------------|---------|---------------------------|
+| EWR     | Newark Liberty International Airport        | 40.692501           | -74.168701           | 18.0                   | -5.0                    | A       | America/New_York         |
+| JFK     | John F Kennedy International Airport        | 40.639801           | -73.778900           | 13.0                   | -5.0                    | A       | America/New_York         |
+| LGA     | La Guardia Airport                         | 40.777199           | -73.872597           | 21.0                   | -5.0                    | A       | America/New_York         |
+
+---
+
+### Analyse Flights Per Day
+```python
+plot_flight_destinations(1, 1, "JFK")
+stats = get_flight_statistics(1, 1, "JFK")
+print(stats)  
+```
+Plot the flight destinations and we get flight statistics for JFK on January 1st.
+<div align="center">
+  <img src="figures/Figure_16.png" alt="Flights from JFK on January 1st" width="55%"/>
+</div>
+
+```bash
+{'total_flights': 267, 'unique_destinations': 64, 'most_visited': 'LAX', 'most_visited_count': 18}
+```
+
+### Average Delays
 ...
 
+### airport-airport analysis
 
-### Extract NYC airports
+### (month, destination) delays
 
+### plane manufacturers
 
+### distance -- average delay
 
+### speed per model
 
-
-
-
-
+### plane direction
 
 
 
