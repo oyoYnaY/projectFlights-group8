@@ -374,7 +374,7 @@ def average_delay_per_carrier_plot():
         results = cursor.fetchall()
     
     plt.figure(figsize=(12, 6))
-    plt.bar([x[2] for x in data], [x[0] for x in data], color="skyblue")
+    plt.bar([x[2] for x in results], [x[0] for x in results], color="skyblue")
     plt.xlabel("Airlines")
     plt.ylabel("Average delay")
     plt.title("Average delay for each airline")
