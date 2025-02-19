@@ -26,7 +26,8 @@ The following Python libraries were used in this project for **data processing, 
 - `math` - Calculate distance
 - `streamlit` Build final dashboard
 - `base64` For using png image as ui
-- ...
+- `sqlite3` For database
+- `datetime` For date range selection
   
 ## Part 1,2
 ### Data Fields
