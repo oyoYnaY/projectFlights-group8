@@ -249,7 +249,7 @@ def plot_multiple_flight_routes(faa_codes):
     fig.show()
 
 # Example usage
-plot_multiple_flight_routes(["LAX", "JFK", "SFO", "LHR", "AAF", "AAP"])
+# plot_multiple_flight_routes(["LAX", "JFK", "SFO", "LHR", "AAF", "AAP"])
 
 
 
@@ -313,7 +313,7 @@ plt.title("Comparison of Computed vs. Database Flight Distances (First 200 Fligh
 plt.legend()
 # plt.show()
 
-conn.close()
+
 
 # extract NYC airports
 cursor.execute("""
@@ -360,3 +360,4 @@ def plot_flight_destinations(month, day, airport):
 
 # plot_flight_destinations(1, 1, "JFK")  # plot the flight destinations for JFK on January 1st
 conn.close()
+
