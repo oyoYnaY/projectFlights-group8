@@ -249,7 +249,7 @@ def plot_multiple_flight_routes(faa_codes):
     fig.show()
 
 # Example usage
-plot_multiple_flight_routes(["LAX", "JFK", "SFO", "LHR", "AAF", "AAP"])
+# plot_multiple_flight_routes(["LAX", "JFK", "SFO", "LHR", "AAF", "AAP"])
 
 
 
@@ -313,7 +313,7 @@ plt.title("Comparison of Computed vs. Database Flight Distances (First 200 Fligh
 plt.legend()
 # plt.show()
 
-conn.close()
+
 
 # extract NYC airports
 cursor.execute("""
@@ -329,3 +329,35 @@ df_unique_origins = pd.read_sql_query(query, conn, params=unique_origins)
 
 # print(df_unique_origins)
 conn.close()
+
+# analyse flights per day
+# retrieve the number of flights per day for a specific NYC airport
+def plot_flight_destinations(month, day, airport):
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        
+        # query the number of flights to each destination from the specified airport
+        cursor.execute("""
+            SELECT dest, COUNT(*) AS flight_count
+            FROM flights
+            WHERE month = ? AND day = ? AND origin = ?
+            GROUP BY dest
+            ORDER BY flight_count DESC;
+        """, (month, day, airport))
+        
+        results = cursor.fetchall()
+
+    destinations = [row[0] for row in results]
+    flight_counts = [row[1] for row in results]
+
+    plt.figure(figsize=(12, 6))
+    plt.bar(destinations, flight_counts, color="skyblue")
+    plt.xlabel("Destination Airport")
+    plt.ylabel("Number of Flights")
+    plt.title(f"Flights from {airport} on {month}/{day}")
+    plt.xticks(rotation=90)
+    plt.show()
+
+# plot_flight_destinations(1, 1, "JFK")  # plot the flight destinations for JFK on January 1st
+conn.close()
+
