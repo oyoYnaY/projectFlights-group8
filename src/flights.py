@@ -194,68 +194,62 @@ plt.grid(True)
 
 # plt.show()
 
-
-def plot_flight_route(faa_code):
+def plot_multiple_flight_routes(faa_codes):
     nyc_airport = df[df["faa"] == "EWR"]
-    nyc_lat = nyc_airport["lat"].values[0]
-    nyc_lon = nyc_airport["lon"].values[0]
-
-    airport = df[df["faa"] == faa_code.upper()]
-
-    if airport.empty:
-        print(f"Error: No airport found with FAA code '{faa_code}'.")
+    if nyc_airport.empty:
+        print("Error: No airport found for EWR.")
         return
 
-    airport_name = airport["name"].values[0]
-    airport_lat = airport["lat"].values[0]
-    airport_lon = airport["lon"].values[0]
-    airport_tzone = airport["tzone"].values[0]
-
-    is_europe = str(airport_tzone).startswith("Europe/")
-    is_us = str(airport_tzone).startswith(("America/", "Pacific/"))
-
-    map_scope = "world" if not is_us else "usa"
+    nyc_lat = nyc_airport["lat"].values[0]
+    nyc_lon = nyc_airport["lon"].values[0]
 
     fig = px.scatter_geo(
         lat=[],
         lon=[],
-        title=f"Flight Route: NYC → {airport_name} ({faa_code.upper()})",
-        projection="natural earth" if map_scope == "world" else "albers usa",
+        title="Flight Routes from NYC (EWR)",
+        projection="natural earth",
     )
 
-    fig.add_trace(
-        go.Scattergeo(
-            lon=[nyc_lon],
-            lat=[nyc_lat],
-            mode="markers",
-            marker=dict(size=8, color="blue"),
-            name="NYC",
-        )
-    )
+    for faa_code in faa_codes:
+        airport = df[df["faa"] == faa_code.upper()]
 
-    fig.add_trace(
-        go.Scattergeo(
-            lon=[airport_lon],
-            lat=[airport_lat],
-            text=[airport_name],
-            mode="markers",
-            marker=dict(size=8, color="green"),
-            name=f"{airport_name}",
-        )
-    )
+        if airport.empty:
+            print(f"Warning: No airport found with FAA code '{faa_code}'.")
+            continue
 
-    fig.add_trace(
-        go.Scattergeo(
-            locationmode="ISO-3",
-            lon=[nyc_lon, airport_lon],
-            lat=[nyc_lat, airport_lat],
-            mode="lines",
-            line=dict(width=2, color="blue"),
-            name="Flight Route",
+        airport_name = airport["name"].values[0]
+        airport_lat = airport["lat"].values[0]
+        airport_lon = airport["lon"].values[0]
+        airport_tzone = airport["tzone"].values[0]
+
+        is_us = str(airport_tzone).startswith(("America/", "Pacific/"))
+
+        fig.add_trace(
+            go.Scattergeo(
+                lon=[nyc_lon, airport_lon],
+                lat=[nyc_lat, airport_lat],
+                mode="lines",
+                line=dict(width=2, color="blue"),
+                name=f"NYC → {airport_name}",
+            )
         )
-    )
+
+        fig.add_trace(
+            go.Scattergeo(
+                lon=[airport_lon],
+                lat=[airport_lat],
+                text=[airport_name],
+                mode="markers",
+                marker=dict(size=8, color="green"),
+                name=f"{airport_name}",
+            )
+        )
 
     fig.show()
+
+# Example usage
+plot_multiple_flight_routes(["LAX", "JFK", "SFO", "LHR", "AAF", "AAP"])
+
 
 
 # Example Usage:
