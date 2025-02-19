@@ -249,7 +249,7 @@ def plot_multiple_flight_routes(faa_codes):
     fig.show()
 
 # Example usage
-# plot_multiple_flight_routes(["LAX", "JFK", "SFO", "LHR", "AAF", "AAP"])
+plot_multiple_flight_routes(["LAX", "JFK", "SFO", "AAF", "AAP"])
 
 
 
