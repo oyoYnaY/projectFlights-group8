@@ -15,7 +15,7 @@ This project, developed by the **XB_0112 Data Engineering** group 8, provides an
 
 `airports.csv` contains **information on all destination airports** for flights departing from **New York City in 2023**. Each row represents a **destination airport** where a flight from NYC landed. The dataset includes key details such as the airport's **FAA code, name, latitude, longitude, altitude, time zone, and daylight saving time information**.
 
-`worldcities.csv` contains over 4 million unique cities and towns from every country in the world. [Source](https://simplemaps.com/data/world-cities)
+`worldcities.csv` contains about 47 thousand unique cities and towns from every country in the world. [Source](https://simplemaps.com/data/world-cities)
 
 
 ## Project Features
