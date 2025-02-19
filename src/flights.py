@@ -318,3 +318,18 @@ plt.legend()
 # plt.show()
 
 conn.close()
+
+# extract NYC airports
+cursor.execute("""
+    SELECT DISTINCT origin FROM flights;
+""")
+unique_origins = [row[0] for row in cursor.fetchall()]
+
+query = f"""
+    SELECT * FROM airports
+    WHERE faa IN ({', '.join(['?'] * len(unique_origins))});
+    """
+df_unique_origins = pd.read_sql_query(query, conn, params=unique_origins)
+
+# print(df_unique_origins)
+conn.close()
