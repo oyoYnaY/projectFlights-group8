@@ -57,10 +57,10 @@ st.set_page_config(layout="wide")
 translations = {
     "language_options": ["English", "中文", "Hrvatski", "Nederlands"],
     "project_flight_title": {
-        "English": "Project Flight✈️",
-        "中文": "项目飞行✈️",
-        "Hrvatski": "Projekt Let✈️",
-        "Nederlands": "Project Vlucht✈️"
+        "English": "Project Flight",
+        "中文": "项目飞行",
+        "Hrvatski": "Projekt Let",
+        "Nederlands": "Project Vlucht"
     },
     "select_page": {
         "English": "Select Page",
@@ -330,18 +330,57 @@ if selected_page == t("new_data_entry", selected_language):
         st.info(t("no_new_airports", selected_language))
     # show a note about session state, that new data will disappear if the page is refreshed 
     st.info(t("note_session", selected_language))
-
+# if the user selects the dashboard page, display the dashboard
 else:
-    # if the user selects the dashboard page, display the dashboard
     # if new airports have been added, append them to the main dataframe
     if "new_airports" in st.session_state and st.session_state["new_airports"]:
         new_df = pd.DataFrame(st.session_state["new_airports"])
         df = pd.concat([df, new_df], ignore_index=True)
     # sidebar for flight information 
     st.sidebar.title(t("project_flight_title", selected_language))
+    # add a small airplane image to the sidebar
+    with open("../figures/airplane.png", "rb") as f:
+        encoded_image = base64.b64encode(f.read()).decode()
+        airplane_img = "data:image/png;base64," + encoded_image
+    # UI design for the airplane 
+    st.sidebar.markdown(
+    f"""
+    <style>
+    .cat-container {{
+        text-align: left;
+        padding: 10px;
+    }}
+    .airplane-img {{
+        width: 50px; 
+        animation: bounceAndScale 2s infinite;
+    }}
+    @keyframes bounceAndScale {{
+        0%, 100% {{
+            transform: translateY(0.5px) scale(1);
+            }}
+        20% {{
+            transform: translateY(1.5px) scale(1.01);
+        }}
+        40% {{
+            transform: translateY(0.5px) scale(1);
+        }}
+        60% {{
+            transform: translateY(1.5px) scale(1.01);
+        }}
+        80% {{
+            transform: translateY(0.5px) scale(1);
+        }}
+    }}
+    </style>
+    <div class="cat-container">
+        <img class="airplane-img" src="{airplane_img}" alt="Airplane">
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
+    # add a section to enter two cities for the flight path
     destination_1 = st.sidebar.text_input(t("enter_departure_city", selected_language), key="destination_1")
     destination_2 = st.sidebar.text_input(t("enter_arrival_city", selected_language), key="destination_2")
-    
     # add a query section to search for airports
     st.sidebar.markdown("### " + t("query_airport", selected_language))
     query_input = st.sidebar.text_input(t("query_placeholder", selected_language), key="query_airport_input")
@@ -380,6 +419,8 @@ else:
             current_lat = airport_1['lat'] + progress_ratio * (airport_2['lat'] - airport_1['lat'])
             current_lon = airport_1['lon'] + progress_ratio * (airport_2['lon'] - airport_1['lon'])
             # Mapbox plot with the flight path and airplane image
+            center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 50, "lon": -90} # set the center coordinates
+            zoom_level = 2.5 if map_type == "US" else 1.2 # set the zoom level
             fig = px.scatter_mapbox(
                 filtered_df,
                 lat="lat", lon="lon",
@@ -399,12 +440,23 @@ else:
             airplane_img = "data:image/png;base64," + encoded_image
             # set the coordinates for the airplane image
             delta = 3  # ui size
-            coordinates = [
-                [current_lon - delta, current_lat + delta],  # left top
-                [current_lon + delta, current_lat + delta],  # right top
-                [current_lon + delta, current_lat - delta],  # right bottom
-                [current_lon - delta, current_lat - delta]   # left bottom
-            ]
+            # check if the airplane is flying east or west
+            if airport_2['lon'] >= airport_1['lon']:
+                # airplane is flying east
+                coordinates = [
+                    [current_lon - delta, current_lat + delta],  # left top
+                    [current_lon + delta, current_lat + delta],  # right top
+                    [current_lon + delta, current_lat - delta],  # right bottom
+                    [current_lon - delta, current_lat - delta]   # left bottom
+                ]
+            else:
+                # airplane is flying west, flip the coordinates
+                coordinates = [
+                    [current_lon + delta, current_lat + delta],  # flip the top right to top left
+                    [current_lon - delta, current_lat + delta],  # flip the top left to top right
+                    [current_lon - delta, current_lat - delta],  # flip the bottom left to bottom right
+                    [current_lon + delta, current_lat - delta]   # flip the bottom right to bottom left
+                ]
             fig.update_layout(
                 mapbox=dict(
                     layers=[
@@ -420,8 +472,8 @@ else:
         st.plotly_chart(fig, use_container_width=True, key=f"map-{destination_1}-{destination_2}") # display the map
     # if the user has not entered two cities, display the default map
     else: 
-        center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 50, "lon": -90}
-        zoom_level = 2.5 if map_type == "US" else 1.2
+        center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 50, "lon": -90} 
+        zoom_level = 2.5 if map_type == "US" else 1.2 
         fig_default = px.scatter_mapbox(
             filtered_df, lat="lat", lon="lon",
             color="alt", color_continuous_scale="viridis",
@@ -457,4 +509,6 @@ else:
         st.plotly_chart(fig_scatter, use_container_width=True)
         
     display_visualizations(filtered_df)
+
+
     
