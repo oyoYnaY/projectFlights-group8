@@ -249,7 +249,7 @@ def plot_multiple_flight_routes(faa_codes):
     fig.show()
 
 # Example usage
-plot_multiple_flight_routes(["LAX", "JFK", "SFO", "AAF", "AAP"])
+# plot_multiple_flight_routes(["LAX", "JFK", "SFO", "AAF", "AAP"])
 
 
 
@@ -361,6 +361,49 @@ def plot_flight_destinations(month, day, airport):
 # plot_flight_destinations(1, 1, "JFK")  # plot the flight destinations for JFK on January 1st
 conn.close()
 
+# retrieve flight statistics
+def get_flight_statistics(month, day, airport):
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        
+        # statistics for total flights
+        cursor.execute("""
+            SELECT COUNT(*) FROM flights
+            WHERE month = ? AND day = ? AND origin = ?;
+        """, (month, day, airport))
+        total_flights = cursor.fetchone()[0]
+
+        # statistics for unique destinations
+        cursor.execute("""
+            SELECT COUNT(DISTINCT dest) FROM flights
+            WHERE month = ? AND day = ? AND origin = ?;
+        """, (month, day, airport))
+        unique_destinations = cursor.fetchone()[0]
+
+        # find the most visited destination
+        cursor.execute("""
+            SELECT dest, COUNT(*) AS flight_count
+            FROM flights
+            WHERE month = ? AND day = ? AND origin = ?
+            GROUP BY dest
+            ORDER BY flight_count DESC
+            LIMIT 1;
+        """, (month, day, airport))
+        most_visited = cursor.fetchone()
+        
+        statistics = {
+            "total_flights": total_flights,
+            "unique_destinations": unique_destinations,
+            "most_visited": most_visited[0] if most_visited else None,
+            "most_visited_count": most_visited[1] if most_visited else 0
+        }
+    
+    return statistics
+
+stats = get_flight_statistics(1, 1, "JFK")
+print(stats)  
+# conn.close()
+
 def average_delay_per_carrier_plot():
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
@@ -383,6 +426,6 @@ def average_delay_per_carrier_plot():
     plt.show()
     conn.close()
 
-average_delay_per_carrier_plot()
+# average_delay_per_carrier_plot()
 
 
