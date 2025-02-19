@@ -19,37 +19,47 @@ This project, developed by the **XB_0112 Data Engineering** group 8, provides an
 
 
 ## Project Features
-* **Multi-Language Support**
-  * The interface supports English, Chinese, Croatian, and Dutch. Users can switch languages in real time, with all interface text dynamically updated through a translation table.
-* **Multi-Page Switching**
-  * Two main pages are provided:
-    * **Dashboard:** Displays airport data, map visualizations, flight path and flight time estimations, and various data statistics.
-    * **New Data Entry:** Allows users to input new airport data, which is updated and displayed in real time during the current session.
+
+- **Multi-Language Support**
+  - The interface supports English, Chinese, Croatian, Dutch, and Romanian.
+  - Users can switch languages in real time. All interface text is dynamically updated via a translation dictionary.
+
+- **Multi-Page Navigation**
+  - The application is divided into three main pages:
+    - **Dashboard:**  
+      - Displays dynamic visualizations and key statistics derived from flight data.
+      - Shows altitude and time zone distributions, and a scatter plot of altitude vs. distance.
+      - Provides a collapsible "Flight Details" section that now includes computed flight speed (km/h) along with other flight information.
+    - **New Data Entry:**  
+      - Allows users to enter new data for any of the five tables (Airports, Flights, Airlines, Planes, Weather) through dedicated forms.
+      - New data is stored in the session state and is merged with the existing data for real-time display (data will reset if the session is refreshed or restarted).
+    - **Developer Tool:**  
+      - Provides an interface for executing arbitrary SQL queries (SELECT, INSERT, UPDATE, DELETE, etc.) on the 2023 database.
+      - Enables real-time database modifications and testing.
+
 * **Map Visualization and Flight Path Simulation**
   * Utilizes Plotly's Scatter Mapbox to render a map showing airport locations.
   * Based on the user's input for departure and arrival cities, the system automatically calculates the nearest airports, the flight path distance, and the estimated flight time, then displays the flight progress on the map in real time (Due to performance limitations, We use worldcities.csv to read the coordinates directly from it. World city coordinates added from **worldcities.csv**. [Data Source](https://simplemaps.com/data/world-cities)).
   * **Note: Because airports.csv only contains 1251 airports, when you input arbitrary two city names, it may result in the same nearest airport being returned, causing a calculation error in the system.**
-* **Data Statistics and Dynamic Visualizations**
-  * Provides multiple statistical charts:
-    * Altitude distribution histogram
-    * Time zone distribution histogram
-    * Scatter plot of altitude vs. distance
-  * These visualizations help users intuitively understand the distribution and characteristics of the airport data.
-* **Data Entry**
-  * New data is entered via a form.
-  * The new data is stored in `session_state` and merged with the original data for display on the Dashboard.
-* **Data Query**
-  * Users can input an FAA code or airport name to retrieve the full row of information. Fuzzy search allows users to query without needing an exact match.
-* **Interactive Sidebar Control**
-  * The sidebar includes built-in controls for airport queries, map mode switching (US/World), time zone filtering, and more, allowing users to easily adjust and query the displayed map content.
 
-**Future Tasks:**
-- Modify the dashboard to read data directly from the database and update it with new user input in real time.
-- Add functionality to delete data from the database via the dashboard.
-- Incorporate additional dynamic and static visualizations.
-- Enhance the UI design for a more appealing look.
-- Integrate more Streamlit widgets and/or add new pages for expanded functionality.
-- Update language list for new functionalities.
+- **Dynamic Data Statistics and Visualizations**
+  - The Dashboard features multiple real-time statistical charts and metrics:
+    - **Altitude Distribution Histogram:** Visualizes the spread of airport altitudes.
+    - **Time Zone Distribution Histogram:** Displays the frequency of different time zones among airports.
+    - **Scatter Plot of Altitude vs. Distance:** Explores the relationship between airport altitude and distance from New York.
+    - **Airlines and Average Departure Delay Bar Chart:** Shows each airline’s average departure delay.
+    - **Aircraft Manufacturers Pie Chart:** Presents the distribution of aircraft manufacturers.
+    - **Real-Time Summary Statistics:**  
+      - **Unique Destinations:** Total count of distinct destination airports.
+      - **Most Visited Destination:** The destination with the highest number of flights.
+      - **Aircraft Types and Counts:** A table listing different aircraft types and their corresponding counts.
+  - All these visualizations update dynamically based on the user-selected date range and other filters.
+  
+- **Interactive Sidebar Controls**
+  - The sidebar includes controls for:
+    - Querying flights by a specified date range.
+    - Entering departure and arrival cities to simulate flight paths.
+    - Switching between map modes (US/World) and filtering by time zone.
 ## Installation & Setup
 ### Clone the repository
 ```bash
@@ -67,11 +77,11 @@ myenv\Scripts\activate     # virtual environment on Windows
 
 ### Download libary
 ```bash
-pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math streamlit base64
+pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math streamlit base64 datetime db-sqlite3
 ```
 If you use Jupyter Notebook or Google Colab
 ```bash
-!pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math streamlit base64
+!pip install pandas plotly geopy matplotlib timezonefinder seaborn numpy scikit-learn networkx dash math streamlit base64 datetime db-sqlite3
 ```
 ### Run
 ```bash
