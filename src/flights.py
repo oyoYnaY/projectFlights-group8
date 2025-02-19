@@ -400,8 +400,8 @@ def get_flight_statistics(month, day, airport):
     
     return statistics
 
-stats = get_flight_statistics(1, 1, "JFK")
-print(stats)  
+stats = get_flight_statistics(1, 1, "JFK") # get flight statistics for JFK on January 1st
+# print(stats)  
 # conn.close()
 
 def average_delay_per_carrier_plot():
