@@ -361,3 +361,28 @@ def plot_flight_destinations(month, day, airport):
 # plot_flight_destinations(1, 1, "JFK")  # plot the flight destinations for JFK on January 1st
 conn.close()
 
+def average_delay_per_carrier_plot():
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        
+        # query the number of flights to each destination from the specified airport
+        cursor.execute("""SELECT AVG(f.dep_delay), f.carrier, al.name 
+            FROM flights f 
+            JOIN airlines al ON f.carrier = al.carrier 
+            GROUP BY f.carrier""")
+        
+        results = cursor.fetchall()
+    
+    plt.figure(figsize=(12, 6))
+    plt.bar([x[2] for x in data], [x[0] for x in data], color="skyblue")
+    plt.xlabel("Airlines")
+    plt.ylabel("Average delay")
+    plt.title("Average delay for each airline")
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.show()
+    conn.close()
+
+average_delay_per_carrier_plot()
+
+
