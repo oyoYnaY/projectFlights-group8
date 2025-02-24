@@ -8,6 +8,7 @@
 - **Y. Yan (Yoyo), yyn480**
 
 ---
+
 ## Libraries Used
 
 The following Python libraries were used in this project for **data processing, visualization, and geospatial analysis**:
@@ -28,20 +29,22 @@ The following Python libraries were used in this project for **data processing, 
 - `base64` For using png image as ui
 - `sqlite3` For database
 - `datetime` For date range selection
-  
+
 ## Part 1,2
+
 ### Data Fields
+
 `airports.csv`
-| **Column** | **Description**                                                    | **Example Value**                       | **Data Type** |
+| **Column** | **Description** | **Example Value** | **Data Type** |
 | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------- |
-| `faa`      | **FAA Code** (Three-letter identifier for the destination airport) | `"AAF"` (Apalachicola Regional Airport) | `object`      |
-| `name`     | **Destination Airport Name**                                       | `"Apalachicola Regional Airport"`       | `object`      |
-| `lat`      | **Latitude** (Geographical coordinate of the airport)              | `29.72750092`                           | `float64`     |
-| `lon`      | **Longitude** (Geographical coordinate of the airport)             | `-85.02749634`                          | `float64`     |
-| `alt`      | **Altitude** (Elevation of the airport in feet)                    | `20`                                    | `int64 `      |
-| `tz`       | **Time Zone Offset** (Relative to UTC)                             | `-5` (Apalachicola in UTC-5)            | `float64`     |
-| `dst`      | **Daylight Saving Time (DST) Usage**                               | `"A"` (Active, follows DST)             | `object`      |
-| `tzone`    | **[Timezone in "tz" (Olson) format](https://en.wikipedia.org/wiki/Tz_database)** | `"America/New_York"`      | `object`      |
+| `faa` | **FAA Code** (Three-letter identifier for the destination airport) | `"AAF"` (Apalachicola Regional Airport) | `object` |
+| `name` | **Destination Airport Name** | `"Apalachicola Regional Airport"` | `object` |
+| `lat` | **Latitude** (Geographical coordinate of the airport) | `29.72750092` | `float64` |
+| `lon` | **Longitude** (Geographical coordinate of the airport) | `-85.02749634` | `float64` |
+| `alt` | **Altitude** (Elevation of the airport in feet) | `20` | `int64 ` |
+| `tz` | **Time Zone Offset** (Relative to UTC) | `-5` (Apalachicola in UTC-5) | `float64` |
+| `dst` | **Daylight Saving Time (DST) Usage** | `"A"` (Active, follows DST) | `object` |
+| `tzone` | **[Timezone in "tz" (Olson) format](https://en.wikipedia.org/wiki/Tz_database)** | `"America/New_York"` | `object` |
 
 ---
 
@@ -167,6 +170,7 @@ Alaska (America/Anchorage) has significantly more airports than other regions, l
 The presence of airports in the America/Indiana/Indianapolis time zone suggests historical complexities in time regulation in that region. Parts of Indiana follow independent time zone rules within the Eastern Time Zone, and America/Indiana/Indianapolis has its own time zone designation, possibly due to historical reasons.
 
 The first figure highlights airports in UTC 8. After extracting airports with tz=8, we found that all of them are in the America/Los_Angeles time zone. The correct tz value should be -8, indicating an error in the database entry. Then we replaced 8 to -8.
+
 ```python
 df.loc[df['tz'] == 8, 'tz'] = -8 # fix incorrect tz value
 ```
@@ -209,91 +213,91 @@ In DBSCAN clustering, they are more likely to be classified as outliers rather t
 The results of the undirected airport network graph are similar to the DBSCAN clustering results.
 
 ## Part 3
+
 ### Data Fields
 
 Flights Table (`flights`)
-| **Field Name**      | **Data Type** | **Description** |
+| **Field Name** | **Data Type** | **Description** |
 |---------------------|--------------|----------------|
-| `year`             | INTEGER      | Year of the flight (typically 2023) |
-| `month`            | INTEGER      | Month of the flight (1-12) |
-| `day`              | INTEGER      | Day of the flight (1-31) |
-| `dep_time`         | INTEGER      | **Actual departure time** (Format: HHMM, e.g., 1342 means 13:42) |
-| `sched_dep_time`   | INTEGER      | **Scheduled departure time** (Format: HHMM, e.g., 1330 means 13:30) |
-| `dep_delay`        | REAL         | **Departure delay** (in minutes, negative means early departure) |
-| `arr_time`         | INTEGER      | **Actual arrival time** (Format: HHMM, e.g., 1625 means 16:25) |
-| `sched_arr_time`   | INTEGER      | **Scheduled arrival time** (Format: HHMM, e.g., 1600 means 16:00) |
-| `arr_delay`        | REAL         | **Arrival delay** (in minutes, negative means early arrival) |
-| `carrier`          | TEXT         | **Airline carrier code** (e.g., `AA` for American Airlines) |
-| `flight`           | INTEGER      | **Flight number** (unique identifier, e.g., 1543) |
-| `tailnum`          | TEXT         | **Aircraft registration number** (e.g., `N12345`) |
-| `origin`           | TEXT         | **Origin airport code** (e.g., `JFK` for John F. Kennedy International Airport) |
-| `dest`             | TEXT         | **Destination airport code** (e.g., `LAX` for Los Angeles International Airport) |
-| `air_time`         | REAL         | **Flight duration** (in minutes) |
-| `distance`         | REAL         | **Flight distance** (in miles) |
-| `hour`            | REAL         | **Scheduled departure hour** (24-hour format) |
-| `minute`          | REAL         | **Scheduled departure minute** |
-| `time_hour`       | REAL         | **Flight departure timestamp** (rounded to the hour) |
+| `year` | INTEGER | Year of the flight (typically 2023) |
+| `month` | INTEGER | Month of the flight (1-12) |
+| `day` | INTEGER | Day of the flight (1-31) |
+| `dep_time` | INTEGER | **Actual departure time** (Format: HHMM, e.g., 1342 means 13:42) |
+| `sched_dep_time` | INTEGER | **Scheduled departure time** (Format: HHMM, e.g., 1330 means 13:30) |
+| `dep_delay` | REAL | **Departure delay** (in minutes, negative means early departure) |
+| `arr_time` | INTEGER | **Actual arrival time** (Format: HHMM, e.g., 1625 means 16:25) |
+| `sched_arr_time` | INTEGER | **Scheduled arrival time** (Format: HHMM, e.g., 1600 means 16:00) |
+| `arr_delay` | REAL | **Arrival delay** (in minutes, negative means early arrival) |
+| `carrier` | TEXT | **Airline carrier code** (e.g., `AA` for American Airlines) |
+| `flight` | INTEGER | **Flight number** (unique identifier, e.g., 1543) |
+| `tailnum` | TEXT | **Aircraft registration number** (e.g., `N12345`) |
+| `origin` | TEXT | **Origin airport code** (e.g., `JFK` for John F. Kennedy International Airport) |
+| `dest` | TEXT | **Destination airport code** (e.g., `LAX` for Los Angeles International Airport) |
+| `air_time` | REAL | **Flight duration** (in minutes) |
+| `distance` | REAL | **Flight distance** (in miles) |
+| `hour` | REAL | **Scheduled departure hour** (24-hour format) |
+| `minute` | REAL | **Scheduled departure minute** |
+| `time_hour` | REAL | **Flight departure timestamp** (rounded to the hour) |
 
 ---
 
 Airlines Table (`airlines`)
 | **Field Name** | **Data Type** | **Description** |
 |---------------|--------------|----------------|
-| `carrier`     | TEXT         | **Airline carrier code** (e.g., `AA`, `DL`) |
-| `name`        | TEXT         | **Full airline name** (e.g., `"American Airlines"`) |
+| `carrier` | TEXT | **Airline carrier code** (e.g., `AA`, `DL`) |
+| `name` | TEXT | **Full airline name** (e.g., `"American Airlines"`) |
 
 ---
 
 Airports Table (`airports`)
 | **Field Name** | **Data Type** | **Description** |
 |--------------|--------------|----------------|
-| `faa`       | TEXT         | **Airport code** (e.g., `JFK`, `LGA`, `EWR`) |
-| `name`      | TEXT         | **Airport name** (e.g., `"John F. Kennedy International Airport"`) |
-| `lat`       | REAL         | **Latitude** (geographical location) |
-| `lon`       | REAL         | **Longitude** (geographical location) |
-| `alt`       | REAL         | **Altitude** (in feet) |
-| `tz`        | REAL         | **Time zone offset** (relative to UTC) |
-| `dst`       | TEXT         | **Daylight saving time (DST) indicator** |
-| `tzone`     | TEXT         | **Time zone name** (e.g., `"America/New_York"`) |
+| `faa` | TEXT | **Airport code** (e.g., `JFK`, `LGA`, `EWR`) |
+| `name` | TEXT | **Airport name** (e.g., `"John F. Kennedy International Airport"`) |
+| `lat` | REAL | **Latitude** (geographical location) |
+| `lon` | REAL | **Longitude** (geographical location) |
+| `alt` | REAL | **Altitude** (in feet) |
+| `tz` | REAL | **Time zone offset** (relative to UTC) |
+| `dst` | TEXT | **Daylight saving time (DST) indicator** |
+| `tzone` | TEXT | **Time zone name** (e.g., `"America/New_York"`) |
 
 ---
 
 Planes Table (`planes`)
-| **Field Name**   | **Data Type** | **Description** |
+| **Field Name** | **Data Type** | **Description** |
 |----------------|--------------|----------------|
-| `tailnum`      | TEXT         | **Aircraft registration number** (e.g., `N12345`) |
-| `year`        | INTEGER      | **Year of manufacture** |
-| `type`        | TEXT         | **Aircraft type** (e.g., `"Fixed wing multi engine"`) |
-| `manufacturer`| TEXT         | **Aircraft manufacturer** (e.g., `"Boeing"`, `"Airbus"`) |
-| `model`       | TEXT         | **Aircraft model** (e.g., `"737-800"`) |
-| `engines`     | INTEGER      | **Number of engines** |
-| `seats`       | INTEGER      | **Seating capacity** |
-| `speed`       | INTEGER      | **All 0** |
-| `engine`      | TEXT         | **Engine type** (e.g., `"Turbo-fan"`) |
+| `tailnum` | TEXT | **Aircraft registration number** (e.g., `N12345`) |
+| `year` | INTEGER | **Year of manufacture** |
+| `type` | TEXT | **Aircraft type** (e.g., `"Fixed wing multi engine"`) |
+| `manufacturer`| TEXT | **Aircraft manufacturer** (e.g., `"Boeing"`, `"Airbus"`) |
+| `model` | TEXT | **Aircraft model** (e.g., `"737-800"`) |
+| `engines` | INTEGER | **Number of engines** |
+| `seats` | INTEGER | **Seating capacity** |
+| `speed` | INTEGER | **All 0** |
+| `engine` | TEXT | **Engine type** (e.g., `"Turbo-fan"`) |
 
 ---
 
 Weather Table (`weather`)
-| **Field Name**  | **Data Type** | **Description** |
+| **Field Name** | **Data Type** | **Description** |
 |---------------|--------------|----------------|
-| `origin`     | TEXT         | **Airport code** (e.g., `JFK`, `LGA`, `EWR`) |
-| `year`       | INTEGER      | **Year** (typically 2023) |
-| `month`      | INTEGER      | **Month** (1-12) |
-| `day`        | INTEGER      | **Day** (1-31) |
-| `hour`       | INTEGER      | **Hour** (24-hour format) |
-| `temp`       | REAL         | **Temperature (°F)** |
-| `dewp`       | REAL         | **Dew point temperature (°F)** |
-| `humid`      | REAL         | **Humidity (%)** |
-| `wind_dir`   | REAL         | **Wind direction (degrees)** |
-| `wind_speed` | REAL         | **Wind speed (mph)** |
-| `wind_gust`  | REAL         | **Wind gust speed (mph)** |
-| `precip`     | REAL         | **Precipitation (inches)** |
-| `pressure`   | REAL         | **Air pressure (inHg)** |
-| `visib`      | REAL         | **Visibility (miles)** |
-| `time_hour`  | REAL         | **Timestamp (rounded to the hour)** |
+| `origin` | TEXT | **Airport code** (e.g., `JFK`, `LGA`, `EWR`) |
+| `year` | INTEGER | **Year** (typically 2023) |
+| `month` | INTEGER | **Month** (1-12) |
+| `day` | INTEGER | **Day** (1-31) |
+| `hour` | INTEGER | **Hour** (24-hour format) |
+| `temp` | REAL | **Temperature (°F)** |
+| `dewp` | REAL | **Dew point temperature (°F)** |
+| `humid` | REAL | **Humidity (%)** |
+| `wind_dir` | REAL | **Wind direction (degrees)** |
+| `wind_speed` | REAL | **Wind speed (mph)** |
+| `wind_gust` | REAL | **Wind gust speed (mph)** |
+| `precip` | REAL | **Precipitation (inches)** |
+| `pressure` | REAL | **Air pressure (inHg)** |
+| `visib` | REAL | **Visibility (miles)** |
+| `time_hour` | REAL | **Timestamp (rounded to the hour)** |
 
 ---
-
 
 ### Verify the Distances
 
@@ -303,25 +307,29 @@ Weather Table (`weather`)
 We selected the first 200 flights, and we got the same result.
 
 ### Extract NYC Airports
+
 ```python
 print(df_unique_origins)
 ```
 
-| **FAA** | **Name**                                   | **Latitude (lat)** | **Longitude (lon)** | **Altitude (alt, ft)** | **Time Zone (tz, UTC)** | **DST** | **Time Zone Name**        |
-|---------|---------------------------------------------|---------------------|----------------------|------------------------|-------------------------|---------|---------------------------|
-| EWR     | Newark Liberty International Airport        | 40.692501           | -74.168701           | 18.0                   | -5.0                    | A       | America/New_York         |
-| JFK     | John F Kennedy International Airport        | 40.639801           | -73.778900           | 13.0                   | -5.0                    | A       | America/New_York         |
-| LGA     | La Guardia Airport                         | 40.777199           | -73.872597           | 21.0                   | -5.0                    | A       | America/New_York         |
+| **FAA** | **Name**                             | **Latitude (lat)** | **Longitude (lon)** | **Altitude (alt, ft)** | **Time Zone (tz, UTC)** | **DST** | **Time Zone Name** |
+| ------- | ------------------------------------ | ------------------ | ------------------- | ---------------------- | ----------------------- | ------- | ------------------ |
+| EWR     | Newark Liberty International Airport | 40.692501          | -74.168701          | 18.0                   | -5.0                    | A       | America/New_York   |
+| JFK     | John F Kennedy International Airport | 40.639801          | -73.778900          | 13.0                   | -5.0                    | A       | America/New_York   |
+| LGA     | La Guardia Airport                   | 40.777199          | -73.872597          | 21.0                   | -5.0                    | A       | America/New_York   |
 
 ---
 
 ### Analyse Flights Per Day
+
 ```python
 plot_flight_destinations(1, 1, "JFK")
 stats = get_flight_statistics(1, 1, "JFK")
-print(stats)  
+print(stats)
 ```
+
 Plot the flight destinations and we get flight statistics for JFK on January 1st.
+
 <div align="center">
   <img src="figures/Figure_16.png" alt="Flights from JFK on January 1st" width="55%"/>
 </div>
@@ -331,6 +339,7 @@ Plot the flight destinations and we get flight statistics for JFK on January 1st
 ```
 
 ### Average Delays
+
 ...
 
 ### airport-airport analysis
@@ -341,12 +350,77 @@ Plot the flight destinations and we get flight statistics for JFK on January 1st
 
 ### distance -- average delay
 
-### speed per model
+### Average speed per plane model
+
+We performed two `SELECT` queries to gather data from the `flights` and `plane` tables. Queries:
+
+```python
+query_tailnum = """
+SELECT tailnum, AVG(distance*1.0/air_time) AS avg_speed
+FROM flights
+WHERE air_time > 0
+GROUP BY tailnum
+"""
+
+query_planes = "SELECT tailnum, model FROM planes"
+```
+
+We convert the data gathered into two dataframes using `pandas` with the command:
+
+```python
+tailnum_speed_df = pd.read_sql_query(query_tailnum, conn)
+planes_df = pd.read_sql_query(query_planes, conn)
+```
+
+We report the dataframes above:
+
+<table style="display:inline-block; width:45%">
+  <tr>
+    <th>tailnum</th>
+    <th>avg_speed</th>
+  </tr>
+  <tr>
+    <td>190NV</td>
+    <td>6.754161</td>
+  </tr>
+  <tr>
+    <td>191NV</td>
+    <td>6.328948</td>
+  </tr>
+  <tr>
+    <td>...</td>
+    <td>...</td>
+  </tr>
+  <tr>
+    <td>N999JQ</td>
+    <td>7.464845</td>
+  </tr>
+</table>
+
+<table style="display:inline-block; width:45%">
+  <tr>
+    <th>tailnum</th>
+    <th>model</th>
+  </tr>
+  <tr>
+    <td>N101DQ</td>
+    <td>A321-211</td>
+  </tr>
+  <tr>
+    <td>N101DU</td>
+    <td>BD-500-1A10</td>
+  </tr>
+  <tr>
+    <td>...</td>
+    <td>...</td>
+  </tr>
+  <tr>
+    <td>N998AN</td>
+    <td>A321-231</td>
+  </tr>
+</table>
 
 ### plane direction
-
-
-
 
 ## Dashboard Features Demo
 
