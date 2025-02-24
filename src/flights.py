@@ -429,8 +429,8 @@ def average_delay_per_carrier_plot():
 # average_delay_per_carrier_plot()
 
 def delays_month_destination(months, destination):
-    with sqllite3.connect(db_path) as conn:
-        cursor = conn.cursos()
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
         query = f"""
         SELECT COUNT(*)
         FROM flights
@@ -443,7 +443,7 @@ def delays_month_destination(months, destination):
 # print(delays_month_destination((1,2,3), 'ORD'))
 
 def bins_distance_delay():
-    conn = sqllite3.connect(db_path)
+    conn = sqlite3.connect(db_path)
     # Define the bins
     bins = range(0, 3001, 200)
     
@@ -475,7 +475,7 @@ def bins_distance_delay():
 # bins_distance_delay()
 
 def bins_distance_delay_per_carrier():
-    conn = sqllite3.connect(db_path)
+    conn = sqlite3.connect(db_path)
     # Define the bins
     bins = range(0, 3001, 200)
     
