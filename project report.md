@@ -346,12 +346,12 @@ We look at the delays of planes depending on the a) airline operating, b) month 
 This requires joining the table airlines on flights to recover the full names of the airlines from their two-letter abbreviations. Grouping and joining is performed over these abreviatios as they are unique to their airlines. To plot these delays, simply call
 
 ```python
-print(average_delay_per_carrier_plot())
+print(average-delay_per_carrier_plot())
 ```
 
 Resulting in
 <div align="center">
-  <img src="figures/average-delay-per-carrier.png" alt="Bar plot showing the average delay per carrier" width="55%"/>
+  <img src="figures/avg-delay-per-carrier.png" alt="Bar plot showing the average delay per carrier" width="55%"/>
 </div>
 
 We found the airlines with the lowest delays are the Southwest Airlines Co. and the Frontier Airlines Inc. The greatest delays are to be expected when travelling with Delta Air Lines Inc. The difference between highest and lower average delays is around 30 minutes.
