@@ -340,11 +340,57 @@ Plot the flight destinations and we get flight statistics for JFK on January 1st
 
 ### Average Delays
 
-...
+We look at the delays of planes depending on the a) airline operating, b) month and destination, c) distance of the flight.
+
+## Delay per carrier
+This requires joining the table airlines on flights to recover the full names of the airlines from their two-letter abbreviations. Grouping and joining is performed over these abreviatios as they are unique to their airlines. To plot these delays, simply call
+
+```python
+print(average_delay_per_carrier_plot())
+```
+
+Resulting in
+<div align="center">
+  <img src="figures/average-delay-per-carrier.png" alt="Bar plot showing the average delay per carrier" width="55%"/>
+</div>
+
+We found the airlines with the lowest delays are the Southwest Airlines Co. and the Frontier Airlines Inc. The greatest delays are to be expected when travelling with Delta Air Lines Inc. The difference between highest and lower average delays is around 30 minutes.
+
+## Delays per destination for given months
+The flights database is filtered for the given months and destination. Then the number of rows with arr_delay > 0 is counted. To correctly use the function delays_motths_destination(months, destination), provide months as numerical values in a tuple and destination as the three letters encoding an airport as a string. For example,
+
+```python
+delays_motths_destination((1,2,3), 'ORD')
+```
+Returns 1898 as the number of delayed flights in January, February and March from JFK to O'Hare International Airport in Chicago (ORD).
+
+## Correlation between the distance and the delay
+Distance can be expected to correlate positively with the average delay. Longer flight could controbute to proportionally longer elays. On another hand, more time in the air allows for potential 'catchig up' with the delay caused when departing. To investigate this relationship, we attempt at plotting a scatter plot of the delays against the distance. Since distance is a continuous feature, it needs to be first cut into bins of width 200km to make sense of th unique values. This motivated us to convert part of the database needed into a Pandas datafarme which allows for easier manipulation of data for this purpose than SQL. To plot the scatter plot simply
+
+```python
+bins_distance_delay()
+```
+
+Resulting in
+<div align="center">
+  <img src="figures/avg-delay-dst.png" alt="Scatter plot showing the average delay per distance bin of width 200km" width="55%"/>
+</div>
+
+There is no correlation between these two features. As we have already sicovered, the delay can vary greatly depending on the carrier. Since some of them might be operating on mostly shorter or longer distances, we plot additional graphs of the same information but per carrier. To make the figure clearer, the data has been filtered only for carriers with flights falling into at least 10 bins. In addition, we opted for a line plot to make the correlation more visible. Call
+
+```python
+bins_distance_delay_per_carrier()
+```
+
+To obtain
+<div align="center">
+  <img src="figures/avg-delay-dst-carrier.png" alt="Scatter plot showing the average delay per distance bin of width 200km" width="55%"/>
+</div>
+
+As previously, the correlation is not clear. However, it is more common for the delay to decrease as the length of flight increases. This trend is primarily visible in case of Delta Airlines. 
+
 
 ### airport-airport analysis
-
-### (month, destination) delays
 
 ### plane manufacturers
 
