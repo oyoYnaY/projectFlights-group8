@@ -348,6 +348,29 @@ def find_nearest_airport(city_name, df):
     df["distance_to_city"] = df.apply(lambda row: haversine_distance(city_coords, (row["lat"], row["lon"])), axis=1)
     return df.loc[df["distance_to_city"].idxmin()]
 
+def display_visualizations(data):
+    col1, col2 = st.columns(2)
+    with col1:
+        fig_alt = px.histogram(
+            data, x="alt", nbins=50,
+            title=t("altitude_distribution", selected_language),
+            color_discrete_sequence=["blue"]
+        )
+        st.plotly_chart(fig_alt, use_container_width=True, key="fig_alt")
+    with col2:
+        fig_tz = px.histogram(
+            data, x="tz", nbins=20,
+            title=t("time_zone_distribution", selected_language),
+            color_discrete_sequence=["orange"]
+        )
+        st.plotly_chart(fig_tz, use_container_width=True, key="fig_tz")
+    fig_scatter = px.scatter(
+        data, x="alt", y="distance",
+        title=t("altitude_vs_distance", selected_language),
+        color_discrete_sequence=["green"], opacity=0.7
+    )
+    st.plotly_chart(fig_scatter, use_container_width=True, key="fig_scatter")
+
 df = df.copy()  # Avoid modifying the original DataFrame
 
 # --------------------- New Data Entry Page ---------------------
@@ -581,44 +604,43 @@ else:
         new_df = pd.DataFrame(st.session_state["new_airports"])
         df = pd.concat([df, new_df], ignore_index=True)
         
-    st.sidebar.title(t("project_flight_title", selected_language))
     with open("../figures/airplane.png", "rb") as f:
         encoded_image = base64.b64encode(f.read()).decode()
         airplane_img = "data:image/png;base64," + encoded_image
     st.sidebar.markdown(
-    f"""
-    <style>
-    .cat-container {{
-        text-align: left;
-        padding: 10px;
-    }}
-    .airplane-img {{
-        width: 50px;
-        animation: bounceAndScale 2s infinite;
-    }}
-    @keyframes bounceAndScale {{
-        0%, 100% {{
-            transform: translateY(0.5px) scale(1);
+        f"""
+        <style>
+        .cat-container {{
+            text-align: left;
+            padding: 10px;
         }}
-        20% {{
-            transform: translateY(1.5px) scale(1.01);
+        .airplane-img {{
+            width: 50px;
+            animation: bounceAndScale 2s infinite;
         }}
-        40% {{
-            transform: translateY(0.5px) scale(1);
+        @keyframes bounceAndScale {{
+            0%, 100% {{
+                transform: translateY(0.5px) scale(1);
+            }}
+            20% {{
+                transform: translateY(1.5px) scale(1.01);
+            }}
+            40% {{
+                transform: translateY(0.5px) scale(1);
+            }}
+            60% {{
+                transform: translateY(1.5px) scale(1.01);
+            }}
+            80% {{
+                transform: translateY(0.5px) scale(1);
+            }}
         }}
-        60% {{
-            transform: translateY(1.5px) scale(1.01);
-        }}
-        80% {{
-            transform: translateY(0.5px) scale(1);
-        }}
-    }}
-    </style>
-    <div class="cat-container">
-        <img class="airplane-img" src="{airplane_img}" alt="Airplane">
-    </div>
-    """,
-    unsafe_allow_html=True
+        </style>
+        <div class="cat-container">
+            <img class="airplane-img" src="{airplane_img}" alt="Airplane">
+        </div>
+        """,
+        unsafe_allow_html=True
     )
     
     # Query flights by date range (default End Date is 2023-01-02)
@@ -666,33 +688,26 @@ else:
         flights_df['speed'] = flights_df.apply(lambda row: (row['distance_km'] * 60 / row['air_time']) if row['air_time'] and row['air_time'] > 0 else None, axis=1)
         
         total_flights = len(flights_df)
-        st.write(t("total_flights", selected_language).format(start_date=start_date, end_date=end_date, total_flights=total_flights))
-        
         avg_delay_by_airline = flights_df.groupby('name_airline')['dep_delay'].mean().reset_index()
         fig_avg_delay = px.bar(avg_delay_by_airline, x='name_airline', y='dep_delay',
                                labels={'name_airline': 'Airline', 'dep_delay': 'Avg Departure Delay (min)'},
                                title=t("airlines_avg_delay", selected_language))
-        st.plotly_chart(fig_avg_delay, use_container_width=True, key="fig_avg_delay")
-        
         manufacturer_counts = flights_df['manufacturer'].value_counts().reset_index()
         manufacturer_counts.columns = ['manufacturer', 'count']
         fig_manufacturers = px.pie(manufacturer_counts, names='manufacturer', values='count',
                                    title=t("aircraft_manufacturers", selected_language))
-        st.plotly_chart(fig_manufacturers, use_container_width=True, key="fig_manufacturers")
+        fig_manufacturers.update_layout(
+            margin=dict(l=10, r=10, t=40, b=10),
+            legend=dict(orientation="h", x=0.5, xanchor="center"),
+            height=350
+        )
         
         unique_destinations = flights_df['dest'].nunique()
         dest_counts = flights_df['dest'].value_counts()
         most_visited = dest_counts.idxmax()
         most_visited_count = dest_counts.max()
-        st.write(t("unique_destinations", selected_language).format(unique_destinations=unique_destinations))
-        st.write(t("most_visited", selected_language).format(most_visited=most_visited, most_visited_count=most_visited_count))
-        
         type_counts = flights_df['type'].value_counts().reset_index()
         type_counts.columns = ['Aircraft Type', 'Count']
-        st.write(t("aircraft_types_counts", selected_language))
-        st.dataframe(type_counts)
-        
-        # In Flight Details, replace avg_distance with computed speed
         display_columns = [
             'origin_name',
             'origin',
@@ -704,98 +719,25 @@ else:
             'manufacturer',
             'avg_dep_delay',
             'distance_km',
-            'speed',            # computed speed in km/h
+            'speed',            # calculated spped km/h
             'dest_lat',
             'dest_lon',
             'wind_dir',
             'wind_speed'
         ]
         flights_display = flights_df[display_columns]
-        with st.sidebar.expander(t("flight_details", selected_language)):
-            st.dataframe(flights_display)
     else:
         st.sidebar.warning("No flights found for the given date range")
     
+    # ----------------- Sidebar Filters and Inputs -----------------
     destination_1 = st.sidebar.text_input(t("enter_departure_city", selected_language), key="destination_1")
     destination_2 = st.sidebar.text_input(t("enter_arrival_city", selected_language), key="destination_2")
     map_type = st.sidebar.radio(t("select_default_map_type", selected_language), ["US", "World"])
     tz_options = ['All'] + sorted(df['tz'].unique())
     selected_tz = st.sidebar.selectbox(t("select_time_zone", selected_language), options=tz_options, index=0)
     filtered_df = df if selected_tz == 'All' else df[df['tz'] == selected_tz]
-    if destination_1 and destination_2:
-        airport_1 = find_nearest_airport(destination_1, df)
-        airport_2 = find_nearest_airport(destination_2, df)
-        if airport_1 is not None and airport_2 is not None:
-            distance_km = haversine_distance((airport_1['lat'], airport_1['lon']), (airport_2['lat'], airport_2['lon']))
-            flight_time_hr = distance_km / 600.0
-            st.sidebar.markdown(f"{t('nearest_airport_1', selected_language)} {airport_1['name']} ({airport_1['faa']})")
-            st.sidebar.markdown(f"{t('nearest_airport_2', selected_language)} {airport_2['name']} ({airport_2['faa']})")
-            st.sidebar.markdown(f"{t('distance', selected_language)} {distance_km:.2f} km")
-            st.sidebar.markdown(f"{t('estimated_flight_time', selected_language)} {flight_time_hr:.2f} hours")
-            center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 20, "lon": 0}
-            zoom_level = 2.7 if map_type == "US" else 1
-            flight_progress = st.sidebar.slider(t("flight_progress", selected_language), 0.0, flight_time_hr, 0.0, step=0.1)
-            progress_ratio = flight_progress / flight_time_hr if flight_time_hr > 0 else 0
-            current_lat = airport_1['lat'] + progress_ratio * (airport_2['lat'] - airport_1['lat'])
-            current_lon = airport_1['lon'] + progress_ratio * (airport_2['lon'] - airport_1['lon'])
-            center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 50, "lon": -90}
-            zoom_level = 2.5 if map_type == "US" else 1.2
-            fig = px.scatter_mapbox(
-                filtered_df,
-                lat="lat", lon="lon",
-                color="alt", color_continuous_scale="viridis",
-                size_max=10, zoom=zoom_level, center=center_coords,
-                mapbox_style="open-street-map", opacity=0.7
-            )
-            fig.add_trace(go.Scattermapbox(
-                mode="lines",
-                lon=[airport_1['lon'], airport_2['lon']],
-                lat=[airport_1['lat'], airport_2['lat']],
-                line={'width': 2, 'color': 'blue'},
-                name=t("flight_path", selected_language)
-            ))
-            with open("../figures/airplane.png", "rb") as f:
-                encoded_image = base64.b64encode(f.read()).decode()
-            airplane_img = "data:image/png;base64," + encoded_image
-            delta = 3
-            if airport_2['lon'] >= airport_1['lon']:
-                coordinates = [
-                    [current_lon - delta, current_lat + delta],
-                    [current_lon + delta, current_lat + delta],
-                    [current_lon + delta, current_lat - delta],
-                    [current_lon - delta, current_lat - delta]
-                ]
-            else:
-                coordinates = [
-                    [current_lon + delta, current_lat + delta],
-                    [current_lon - delta, current_lat + delta],
-                    [current_lon - delta, current_lat - delta],
-                    [current_lon + delta, current_lat - delta]
-                ]
-            fig.update_layout(
-                mapbox=dict(
-                    layers=[
-                        {
-                            "source": airplane_img,
-                            "sourcetype": "image",
-                            "coordinates": coordinates,
-                        }
-                    ]
-                )
-            )
-        st.plotly_chart(fig, use_container_width=True, key=f"map-{destination_1}-{destination_2}")
-    else:
-        center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 50, "lon": -90}
-        zoom_level = 2.5 if map_type == "US" else 1
-        fig_default = px.scatter_mapbox(
-            filtered_df, lat="lat", lon="lon",
-            color="alt", color_continuous_scale="viridis",
-            size_max=10, zoom=zoom_level, center=center_coords,
-            mapbox_style="open-street-map", opacity=0.7
-        )
-        fig_default.update_layout(coloraxis_colorbar=dict(title="Altitude"))
-        st.plotly_chart(fig_default, use_container_width=True, key="default-map")
     
+    # ----------------- Display Visualizations for tz -----------------
     def display_visualizations(data):
         col1, col2 = st.columns(2)
         with col1:
@@ -818,7 +760,94 @@ else:
             color_discrete_sequence=["green"], opacity=0.7
         )
         st.plotly_chart(fig_scatter, use_container_width=True, key="fig_scatter")
+    
+    # ----------------- Main Page Content and Visualizations layout -----------------
+    
+    with st.expander(t("flight_details", selected_language)):
+        st.dataframe(flights_display)
+        st.write(t("total_flights", selected_language).format(start_date=start_date, end_date=end_date, total_flights=total_flights))
+        st.write(t("unique_destinations", selected_language).format(unique_destinations=unique_destinations))
+        st.write(t("most_visited", selected_language).format(most_visited=most_visited, most_visited_count=most_visited_count))
+        st.write(t("aircraft_types_counts", selected_language))
+        st.dataframe(type_counts)
+    col_left, col_right = st.columns([2, 1])
+    
+    
+    with col_left:
+        if destination_1 and destination_2:
+            airport_1 = find_nearest_airport(destination_1, df)
+            airport_2 = find_nearest_airport(destination_2, df)
+            if airport_1 is not None and airport_2 is not None:
+                distance_km = haversine_distance((airport_1['lat'], airport_1['lon']), (airport_2['lat'], airport_2['lon']))
+                flight_time_hr = distance_km / 600.0
+                st.markdown(f"{t('nearest_airport_1', selected_language)} {airport_1['name']} ({airport_1['faa']})")
+                st.markdown(f"{t('nearest_airport_2', selected_language)} {airport_2['name']} ({airport_2['faa']})")
+                st.markdown(f"{t('distance', selected_language)} {distance_km:.2f} km")
+                st.markdown(f"{t('estimated_flight_time', selected_language)} {flight_time_hr:.2f} hours")
+                flight_progress = st.slider(t("flight_progress", selected_language), 0.0, flight_time_hr, 0.0, step=0.1)
+                progress_ratio = flight_progress / flight_time_hr if flight_time_hr > 0 else 0
+                current_lat = airport_1['lat'] + progress_ratio * (airport_2['lat'] - airport_1['lat'])
+                current_lon = airport_1['lon'] + progress_ratio * (airport_2['lon'] - airport_1['lon'])
+                center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 50, "lon": -90}
+                zoom_level = 2.5 if map_type == "US" else 1.2
+                fig = px.scatter_mapbox(
+                    filtered_df,
+                    lat="lat", lon="lon",
+                    color="alt", color_continuous_scale="viridis",
+                    size_max=10, zoom=zoom_level, center=center_coords,
+                    mapbox_style="open-street-map", opacity=0.7
+                )
+                fig.add_trace(go.Scattermapbox(
+                    mode="lines",
+                    lon=[airport_1['lon'], airport_2['lon']],
+                    lat=[airport_1['lat'], airport_2['lat']],
+                    line={'width': 2, 'color': 'blue'},
+                    name=t("flight_path", selected_language)
+                ))
+                with open("../figures/airplane.png", "rb") as f:
+                    encoded_image = base64.b64encode(f.read()).decode()
+                airplane_img = "data:image/png;base64," + encoded_image
+                delta = 3
+                if airport_2['lon'] >= airport_1['lon']:
+                    coordinates = [
+                        [current_lon - delta, current_lat + delta],
+                        [current_lon + delta, current_lat + delta],
+                        [current_lon + delta, current_lat - delta],
+                        [current_lon - delta, current_lat - delta]
+                    ]
+                else:
+                    coordinates = [
+                        [current_lon + delta, current_lat + delta],
+                        [current_lon - delta, current_lat + delta],
+                        [current_lon - delta, current_lat - delta],
+                        [current_lon + delta, current_lat - delta]
+                    ]
+                fig.update_layout(
+                    mapbox=dict(
+                        layers=[
+                            {
+                                "source": airplane_img,
+                                "sourcetype": "image",
+                                "coordinates": coordinates,
+                            }
+                        ]
+                    )
+                )
+                st.plotly_chart(fig, use_container_width=True, key=f"map-{destination_1}-{destination_2}")
+        else:
+            center_coords = {"lat": 37.0902, "lon": -95.7129} if map_type == "US" else {"lat": 50, "lon": -90}
+            zoom_level = 2.5 if map_type == "US" else 1
+            fig_default = px.scatter_mapbox(
+                filtered_df, lat="lat", lon="lon",
+                color="alt", color_continuous_scale="viridis",
+                size_max=10, zoom=zoom_level, center=center_coords,
+                mapbox_style="open-street-map", opacity=0.7
+            )
+            fig_default.update_layout(coloraxis_colorbar=dict(title="Altitude"))
+            st.plotly_chart(fig_default, use_container_width=True, key="default-map")
+        st.plotly_chart(fig_avg_delay, use_container_width=True, key="fig_avg_delay")
         
-    display_visualizations(filtered_df)
-
-
+    with col_right:
+        st.plotly_chart(fig_manufacturers, use_container_width=True, key="fig_manufacturers")
+        display_visualizations(filtered_df)
+        
