@@ -352,7 +352,7 @@ Plot the flight destinations and we get flight statistics for JFK on January 1st
 
 ### Average speed per plane model
 
-We performed two `SELECT` queries to gather data from the `flights` and `plane` tables. Queries:
+We performed a `SELECT` query to gather data from the `flights` table. We request the `tailnum` column (which represents the model of the plane), and then compute the values from the `distance` and `air_time` columns and save the results under a new `avg_speed` column. Query:
 
 ```python
 query_tailnum = """
@@ -361,64 +361,34 @@ FROM flights
 WHERE air_time > 0
 GROUP BY tailnum
 """
-
-query_planes = "SELECT tailnum, model FROM planes"
 ```
 
-We convert the data gathered into two dataframes using `pandas` with the command:
+We convert the data gathered into a dataframe using `pandas` with the command:
 
 ```python
 tailnum_speed_df = pd.read_sql_query(query_tailnum, conn)
-planes_df = pd.read_sql_query(query_planes, conn)
 ```
 
 We report the dataframes above:
 
-<table style="display:inline-block; width:45%">
-  <tr>
-    <th>tailnum</th>
-    <th>avg_speed</th>
-  </tr>
-  <tr>
-    <td>190NV</td>
-    <td>6.754161</td>
-  </tr>
-  <tr>
-    <td>191NV</td>
-    <td>6.328948</td>
-  </tr>
-  <tr>
-    <td>...</td>
-    <td>...</td>
-  </tr>
-  <tr>
-    <td>N999JQ</td>
-    <td>7.464845</td>
-  </tr>
-</table>
+| tailnum | avg_speed |
+| ------- | --------- |
+| 190NV   | 6.754161  |
+| 191NV   | 6.328948  |
+| ...     | ...       |
+| N998NN  | 6.703549  |
+| N999JQ  | 7.464845  |
 
-<table style="display:inline-block; width:45%">
-  <tr>
-    <th>tailnum</th>
-    <th>model</th>
-  </tr>
-  <tr>
-    <td>N101DQ</td>
-    <td>A321-211</td>
-  </tr>
-  <tr>
-    <td>N101DU</td>
-    <td>BD-500-1A10</td>
-  </tr>
-  <tr>
-    <td>...</td>
-    <td>...</td>
-  </tr>
-  <tr>
-    <td>N998AN</td>
-    <td>A321-231</td>
-  </tr>
-</table>
+Since we have the average speed, we `UPDATE` the `planes` table with the computed averae speed per plane:
+
+```python
+cur = conn.cursor()
+for _, row in tailnum_speed_df.iterrows():
+    cur.execute("UPDATE planes SET speed = ? WHERE tailnum = ?", (row['avg_speed'], row['tailnum']))
+
+conn.commit()
+conn.close()
+```
 
 ### plane direction
 
