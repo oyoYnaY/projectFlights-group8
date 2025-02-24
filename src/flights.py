@@ -428,4 +428,109 @@ def average_delay_per_carrier_plot():
 
 # average_delay_per_carrier_plot()
 
+def delays_month_destination(months, destination):
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        query = f"""
+        SELECT COUNT(*)
+        FROM flights
+        WHERE dest = '{destination}' AND month IN {months} AND arr_delay > 0
+        """
+        results = conn.execute(query).fetchone()[0]
+    conn.close()
+    return results
+
+# print(delays_month_destination((1,2,3), 'ORD'))
+
+def bins_distance_delay():
+    conn = sqlite3.connect(db_path)
+    # Define the bins
+    bins = range(0, 3001, 200)
+    
+    # Query the database
+    query = """
+    SELECT distance, arr_delay
+    FROM flights
+    """
+    df = pd.read_sql_query(query, conn)
+    
+    # Bin the distances
+    df['distance_bins'] = pd.cut(df['distance'], bins)
+    
+    # Group by the bins and calculate the mean arrival delay
+    grouped = df.groupby('distance_bins')['arr_delay'].mean().reset_index()
+    
+    # Extract the midpoint of each bin for plotting
+    grouped['bin_midpoint'] = grouped['distance_bins'].apply(lambda x: x.mid)
+    
+    # Plot the scatter plot
+    plt.scatter(grouped['bin_midpoint'], grouped['arr_delay'])
+    plt.xlabel('Distance Bin Midpoint')
+    plt.ylabel('Average Arrival Delay')
+    plt.title('Average Arrival Delay by Distance Bin')
+    plt.grid(True)
+    plt.show()
+    conn.close()
+
+# bins_distance_delay()
+
+def bins_distance_delay_per_carrier():
+    conn = sqlite3.connect(db_path)
+    # Define the bins
+    bins = range(0, 3001, 200)
+    
+    # Query the database
+    query = """
+    SELECT distance, arr_delay, carrier
+    FROM flights
+    """
+    df = pd.read_sql_query(query, conn)
+    
+    # Bin the distances
+    df['distance_bins'] = pd.cut(df['distance'], bins)
+    
+    # Group by both distance_bins and carrier, and calculate the mean arrival delay
+    grouped = df.groupby(['distance_bins', 'carrier'])['arr_delay'].mean().reset_index()
+    
+    # Extract the midpoint of each bin for plotting
+    grouped['bin_midpoint'] = grouped['distance_bins'].apply(lambda x: x.mid)
+
+    # Filter carriers with at least 10 bins with data 
+    filtered_carriers = non_missing_counts[non_missing_counts['n_non_missing'] >= 10]['carrier']
+
+    # Filter the original DataFrame to include only the selected carriers
+    grouped_filtered = grouped[grouped['carrier'].isin(filtered_carriers)]
+    
+    # Get the list of filtered carriers
+    carriers = grouped_filtered['carrier'].unique()
+    
+    # Determine the grid size for subplots
+    n_carriers = len(carriers)
+    n_cols = 3  # Number of columns in the grid
+    n_rows = (n_carriers // n_cols) + (1 if n_carriers % n_cols != 0 else 0)
+    
+    # Create a grid of subplots
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, n_rows * 3))
+    axes = axes.flatten()  # Flatten the 2D array of axes for easy iteration
+    
+    # Plot a line plot for each filtered carrier in its own subplot
+    for i, carrier in enumerate(carriers):
+        ax = axes[i]
+        carrier_data = grouped_filtered[grouped_filtered['carrier'] == carrier]
+        ax.plot(carrier_data['bin_midpoint'], carrier_data['arr_delay'], marker='o', label=carrier)
+        ax.set_title(f'Carrier: {carrier}')
+        ax.set_xlabel('Distance Bin Midpoint')
+        ax.set_ylabel('Average Arrival Delay')
+        ax.grid(True)
+        ax.legend()
+    
+    # Hide any unused subplots
+    for j in range(i + 1, len(axes)):
+        axes[j].axis('off')
+    
+    plt.tight_layout()  # Adjust layout to prevent overlap
+    plt.show()
+    conn.close()
+
+# bins_distance_delay_per_carrier()
 
