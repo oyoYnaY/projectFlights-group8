@@ -495,7 +495,8 @@ def bins_distance_delay_per_carrier():
     # Extract the midpoint of each bin for plotting
     grouped['bin_midpoint'] = grouped['distance_bins'].apply(lambda x: x.mid)
 
-    # Filter carriers with at least 10 bins with data 
+    # Filter carriers with at least 10 bins with data
+    non_missing_counts = grouped.groupby('carrier')['arr_delay'].apply(lambda x: x.notna().sum()).reset_index(name='n_non_missing')
     filtered_carriers = non_missing_counts[non_missing_counts['n_non_missing'] >= 10]['carrier']
 
     # Filter the original DataFrame to include only the selected carriers
