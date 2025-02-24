@@ -390,6 +390,10 @@ conn.commit()
 conn.close()
 ```
 
+<div align="center">
+  <img src="figures/table_updated_speed.png" alt="Flights from JFK on January 1st" />
+</div>
+
 ### plane direction
 
 ## Dashboard Features Demo
