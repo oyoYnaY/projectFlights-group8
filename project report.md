@@ -342,7 +342,7 @@ Plot the flight destinations and we get flight statistics for JFK on January 1st
 
 We look at the delays of planes depending on the a) airline operating, b) month and destination, c) distance of the flight.
 
-## Delay per carrier
+#### Delay per carrier
 This requires joining the table airlines on flights to recover the full names of the airlines from their two-letter abbreviations. Grouping and joining is performed over these abreviatios as they are unique to their airlines. To plot these delays, simply call
 
 ```python
@@ -356,7 +356,7 @@ Resulting in
 
 We found the airlines with the lowest delays are the Southwest Airlines Co. and the Frontier Airlines Inc. The greatest delays are to be expected when travelling with Delta Air Lines Inc. The difference between highest and lower average delays is around 30 minutes.
 
-## Delays per destination for given months
+#### Delays per destination for given months
 The flights database is filtered for the given months and destination. Then the number of rows with arr_delay > 0 is counted. To correctly use the function delays_motths_destination(months, destination), provide months as numerical values in a tuple and destination as the three letters encoding an airport as a string. For example,
 
 ```python
@@ -364,7 +364,7 @@ delays_motths_destination((1,2,3), 'ORD')
 ```
 Returns 1898 as the number of delayed flights in January, February and March from JFK to O'Hare International Airport in Chicago (ORD).
 
-## Correlation between the distance and the delay
+#### Correlation between the distance and the delay
 Distance can be expected to correlate positively with the average delay. Longer flight could controbute to proportionally longer elays. On another hand, more time in the air allows for potential 'catchig up' with the delay caused when departing. To investigate this relationship, we attempt at plotting a scatter plot of the delays against the distance. Since distance is a continuous feature, it needs to be first cut into bins of width 200km to make sense of th unique values. This motivated us to convert part of the database needed into a Pandas datafarme which allows for easier manipulation of data for this purpose than SQL. To plot the scatter plot simply
 
 ```python
@@ -393,8 +393,6 @@ As previously, the correlation is not clear. However, it is more common for the 
 ### airport-airport analysis
 
 ### plane manufacturers
-
-### distance -- average delay
 
 ### Average speed per plane model
 
