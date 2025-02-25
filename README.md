@@ -2,7 +2,7 @@
 ## Flights Analysis Dashboard✈️
 This project, developed by the **XB_0112 Data Engineering** group 8, provides an interactive dashboard built with Python and Streamlit to visualize airport and flight data—with features including multi-language support, multi-page switching, real-time map visualization and flight path simulation using world city coordinates from worldcities.csv, dynamic data statistics, real-time data entry and query capabilities, and interactive sidebar controls.
 ### Project Report && Project Inrtoduction
-[Project Report](project%20report.md) && [flights_part123.pdf](flights_part123.pdf) 
+[Project Report](project%20report.md) && [flights_part1-4.pdf](flights_part1-4.pdf) 
 
 ## Dataset Overview
 `flights_database.db` is an **SQLite database** containing all flights departing from **New York City (NYC)** in **2023**, along with relevant information. The database consists of the following **five tables**: 
@@ -105,7 +105,7 @@ PROJECTFLIGHTS-GROUP8/
 │-- project report.md     # Detailed project report
 │-- README.md             # Project documentation
 │-- flights_database.db   # Database
-│-- flights_part123.pdf   # Assignment introduction
+│-- flights_part1-4.pdf   # Assignment introduction
 ```
 ### Git Collaboration Guidelines
 [CONTRIBUTING.md](CONTRIBUTING.md)
