@@ -654,7 +654,7 @@ def compute_avg_speed_and_update_db():
             # print(f"UPDATE planes SET speed = {row['avg_speed']} WHERE tailnum = {row['tailnum']}")
 
 
-compute_avg_speed_and_update_db()
+# compute_avg_speed_and_update_db()
 
 
 #########################################################
