@@ -586,7 +586,6 @@ if selected_page == t("new_data_entry", selected_language):
 
 # --------------------- General Results Page [Need Fixd!] ---------------------
 elif selected_page == "General Results":
-    st.subheader("General Results")
     # Load data from SQLite database
     conn = sqlite3.connect(db_path)
     query = "SELECT * FROM flights WHERE year = 2023"
