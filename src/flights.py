@@ -801,6 +801,60 @@ def generate_bearing_df():
 
 
 # Example case
-# df_flights_bearing = generate_bearing_df()
-# df_flights_bearing_small = df_flights_bearing.copy().dropna().head(5)
+df_flights_bearing = generate_bearing_df()
+df_flights_bearing_small = df_flights_bearing.copy().dropna().head(5)
 # print(df_flights_bearing_small)
+
+# Example case: Show polar histogram ofthe first 5 pairs of directions to see if the inner product is affected by the direction of the plane (in air) and direction of the wind.
+for idx, row in df_flights_bearing_small.iterrows():
+    # Create 1x2 subplot layout
+    fig = make_subplots(
+        rows=1, cols=2,
+        specs=[[{"type": "polar"}, {"type": "polar"}]],
+        # these become annotations
+        subplot_titles=("Wind Direction", "Bearing")
+    )
+
+    # First polar histogram (Wind Direction)
+    fig.add_trace(
+        go.Barpolar(
+            r=[1],
+            theta=[row["wind_dir"]],
+            name="Wind Dir"
+        ),
+        row=1, col=1
+    )
+
+    # Second polar histogram (Bearing)
+    fig.add_trace(
+        go.Barpolar(
+            r=[1],
+            theta=[row["bearing"]],
+            name="Bearing"
+        ),
+        row=1, col=2
+    )
+
+    # Adjust layout (including the main figure title if you want)
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(range=[0, 1.2], showticklabels=False, ticks="")
+        ),
+        polar2=dict(
+            radialaxis=dict(range=[0, 1.2], showticklabels=False, ticks="")
+        ),
+        showlegend=False,
+        title={
+            "text": f"From {row['origin']} to {row['dest']}. I.P. {row['innerProd']}",
+            "x": 0.5,
+            "y": 0.95
+        },
+        margin=dict(t=100)
+    )
+
+    # Move each subplot title (annotation) higher
+    # Increase the y-value as needed (e.g., +0.04, +0.05, etc.)
+    for annotation in fig.layout.annotations:
+        annotation.y += 0.05
+
+    fig.show()
