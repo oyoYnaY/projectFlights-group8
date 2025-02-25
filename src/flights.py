@@ -535,3 +535,68 @@ def bins_distance_delay_per_carrier():
 
 # bins_distance_delay_per_carrier()
 
+def top_manufacturers_to_destiantion(destination):
+    with sqlite3.connect(db_path) as conn:
+        query = f"""
+            SELECT manufacturer, COUNT(*) AS num_flights
+            FROM (
+                SELECT tailnum
+                FROM flights
+                WHERE dest = '{destination}'
+            ) f
+            JOIN (
+                SELECT manufacturer, tailnum
+                FROM planes
+            ) p
+            ON f.tailnum = p.tailnum
+            GROUP BY manufacturer
+            ORDER BY COUNT(*) DESC
+            LIMIT 5
+        """
+        df = pd.read_sql(query, conn).set_index("manufacturer")
+    
+    plt.figure(figsize=(12, 6))
+    plt.bar(df.index, df["num_flights"], color="skyblue")
+    plt.xlabel("Manufacturer")
+    plt.ylabel("Number of Flights")
+    plt.title(f"Top 5 Manufacturers for Destination {destination}")
+    plt.show()
+    conn.close()
+
+# top_manufacturers_to_destiantion("ATL")
+
+#returns a dict describing how many times each plane type was used for flight trajectory between origin and destination flight
+def flights_between_cities(origin, destination):
+    ny_airports = {"JFK", "LGA", "EWR"}
+    with sqlite3.connect(db_path) as conn:
+        if origin not in ny_airports:
+            raise ValueError("Origin airport must be from a New York.")
+        
+        query = f"""
+            SELECT COUNT(*) AS count
+            FROM airports
+            WHERE faa = '{destination}'
+        """
+        if pd.read_sql(query, conn).iloc[0, 0] == 0:
+            raise ValueError("Destination airport is not the database.")
+        
+        query = f"""
+            SELECT type, COUNT(*) AS num_flights
+            FROM (
+                SELECT tailnum
+                FROM flights
+                WHERE dest = '{destination}'
+                AND origin = '{origin}'
+            ) f
+            JOIN (
+                SELECT type, tailnum
+                FROM planes
+            ) p
+            ON f.tailnum = p.tailnum
+            GROUP BY type
+        """
+
+        return pd.read_sql(query, conn).set_index("type")
+    conn.close()
+    
+# print(flights_between_cities("JFK", "ATL").to_dict()["num_flights"])
