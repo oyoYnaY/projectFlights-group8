@@ -9,7 +9,7 @@ import math
 import sqlite3
 
 
-# =============== Data processing for airports.csv =============== 
+# =============== Data processing for airports.csv ===============
 # read airports.csv
 df = pd.read_csv("../data/airports.csv")
 
@@ -36,7 +36,8 @@ df["tzone"] = df.apply(
     axis=1,
 )
 # update tz values based on the inferred tzone
-tz_mapping_dynamic = dict(df[["tzone", "tz"]].dropna().drop_duplicates().values)
+tz_mapping_dynamic = dict(
+    df[["tzone", "tz"]].dropna().drop_duplicates().values)
 df["tz"] = df.apply(
     lambda row: (
         tz_mapping_dynamic.get(row["tzone"], row["tz"])
@@ -47,6 +48,8 @@ df["tz"] = df.apply(
 )
 
 # infer dst based on the most common dst setting per tzone
+
+
 def infer_dst_from_tzone(tzone):
     if pd.isnull(tzone):
         return 'U'
@@ -57,8 +60,10 @@ def infer_dst_from_tzone(tzone):
     else:
         return 'N'
 
+
 df["dst"] = df.apply(
-    lambda row: row["dst"] if pd.notnull(row["dst"]) else infer_dst_from_tzone(row["tzone"]),
+    lambda row: row["dst"] if pd.notnull(
+        row["dst"]) else infer_dst_from_tzone(row["tzone"]),
     axis=1
 )
 
@@ -66,10 +71,11 @@ df["dst"] = df.apply(
 # print("missing values after inference:\n", df.isnull().sum())
 # print(df[df["tz"].isnull()])
 # print(df[df["tzone"] == "America/Boise"][["tzone", "tz"]].dropna().drop_duplicates()) # check for missing values in America/Boise
-df.loc[df["tzone"] == "America/Boise", "tz"] = -7 # fix missing values in America/Boise
+df.loc[df["tzone"] == "America/Boise", "tz"] = - \
+    7  # fix missing values in America/Boise
 # print("missing values after final fix:\n", df.isnull().sum())
 
-df.loc[df['tz'] == 8, 'tz'] = -8 # fix incorrect tz value
+df.loc[df['tz'] == 8, 'tz'] = -8  # fix incorrect tz value
 
 # convert altitude to meters
 df["alt_meters"] = df["alt"] * 0.3048
@@ -117,32 +123,33 @@ plt.title("Airports That Do NOT Observe DST")
 # plt.show()
 
 
-# =============== Part 1,2 =============== 
+# =============== Part 1,2 ===============
 # visualizations
 # plot global airport distribution, with color coded by 'alt' (altitude)
-fig_global = px.scatter_geo(df, 
-                            lat="lat", lon="lon", 
+fig_global = px.scatter_geo(df,
+                            lat="lat", lon="lon",
                             hover_name="name",
                             color="alt_meters",  # color by altitude
                             title="Global Airport Distribution (Colored by Altitude)",
                             projection="natural earth",
                             color_continuous_scale="Viridis",  # Choose color scale
-                            labels={"alt_meters": "Altitude (m)"}  # Set color legend title
-    )
+                            # Set color legend title
+                            labels={"alt_meters": "Altitude (m)"}
+                            )
 
 # fig_global.show()
 
 
 # plot US airport distribution, with color coded by 'alt' (altitude)
 # use scatter_geo funcion, scope="usa"
-fig_us= px.scatter_geo(df, 
-                        lat="lat", lon="lon", 
+fig_us = px.scatter_geo(df,
+                        lat="lat", lon="lon",
                         hover_name="name",
                         color="alt_meters",  # color by altitude
                         title="us airport distribution (colored by altitude)",
                         scope="usa",
                         color_continuous_scale="Viridis",
-                        labels={"alt_meters": "Altitude (m)"} 
+                        labels={"alt_meters": "Altitude (m)"}
                         )
 # fig_us.show()
 
@@ -194,6 +201,7 @@ plt.title("Distribution of the geodesic distances between the eirports and JFK")
 plt.grid(True)
 
 # plt.show()
+
 
 def plot_multiple_flight_routes(faa_codes):
     nyc_airport = df[df["faa"] == "EWR"]
@@ -252,23 +260,23 @@ def plot_multiple_flight_routes(faa_codes):
 # plot_multiple_flight_routes(["LAX", "JFK", "SFO", "AAF", "AAP"])
 
 
-
 # Example Usage:
 # plot_flight_route("LAX")
 # plot_flight_route("HNL")  # the flight route line is broken
 # plot_flight_route("TZR")
 
 
-# =============== Data processing for flights_database.db =============== 
-
-# =============== Part 3 =============== 
-# verify the distances 
-# database_path 
+# =============== Data processing for flights_database.db ===============
+# =============== Part 3 ===============
+# verify the distances
+# database_path
 db_path = "../flights_database.db"
 
 # transform calculate_geo_distance function to a function that can be used in SQL queries
+
+
 def compute_geo_distance(lat1, lon1, lat2, lon2):
-    R = 6378.1370 
+    R = 6378.1370
     # geo_distance
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
     dlat = lat2 - lat1
@@ -278,10 +286,11 @@ def compute_geo_distance(lat1, lon1, lat2, lon2):
     geo_distance = R * math.sqrt(exp_one + exp_two)
     return geo_distance
 
+
 # connect to the database
 with sqlite3.connect(db_path) as conn:
     cursor = conn.cursor()
-    
+
     # query the first 200 flights with origin and destination airport coordinates
     cursor.execute("""
         SELECT f.origin, f.dest, f.distance, a1.lat, a1.lon, a2.lat, a2.lon
@@ -314,7 +323,6 @@ plt.legend()
 # plt.show()
 
 
-
 # extract NYC airports
 cursor.execute("""
     SELECT DISTINCT origin FROM flights;
@@ -332,10 +340,12 @@ conn.close()
 
 # analyse flights per day
 # retrieve the number of flights per day for a specific NYC airport
+
+
 def plot_flight_destinations(month, day, airport):
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        
+
         # query the number of flights to each destination from the specified airport
         cursor.execute("""
             SELECT dest, COUNT(*) AS flight_count
@@ -344,7 +354,7 @@ def plot_flight_destinations(month, day, airport):
             GROUP BY dest
             ORDER BY flight_count DESC;
         """, (month, day, airport))
-        
+
         results = cursor.fetchall()
 
     destinations = [row[0] for row in results]
@@ -358,14 +368,17 @@ def plot_flight_destinations(month, day, airport):
     plt.xticks(rotation=90)
     plt.show()
 
+
 # plot_flight_destinations(1, 1, "JFK")  # plot the flight destinations for JFK on January 1st
 conn.close()
 
 # retrieve flight statistics
+
+
 def get_flight_statistics(month, day, airport):
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        
+
         # statistics for total flights
         cursor.execute("""
             SELECT COUNT(*) FROM flights
@@ -390,32 +403,35 @@ def get_flight_statistics(month, day, airport):
             LIMIT 1;
         """, (month, day, airport))
         most_visited = cursor.fetchone()
-        
+
         statistics = {
             "total_flights": total_flights,
             "unique_destinations": unique_destinations,
             "most_visited": most_visited[0] if most_visited else None,
             "most_visited_count": most_visited[1] if most_visited else 0
         }
-    
+
     return statistics
 
-stats = get_flight_statistics(1, 1, "JFK") # get flight statistics for JFK on January 1st
-# print(stats)  
+
+# get flight statistics for JFK on January 1st
+stats = get_flight_statistics(1, 1, "JFK")
+# print(stats)
 # conn.close()
+
 
 def average_delay_per_carrier_plot():
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        
+
         # query the number of flights to each destination from the specified airport
         cursor.execute("""SELECT AVG(f.dep_delay), f.carrier, al.name 
             FROM flights f 
             JOIN airlines al ON f.carrier = al.carrier 
             GROUP BY f.carrier""")
-        
+
         results = cursor.fetchall()
-    
+
     plt.figure(figsize=(12, 6))
     plt.bar([x[2] for x in results], [x[0] for x in results], color="skyblue")
     plt.xlabel("Airlines")
@@ -427,6 +443,7 @@ def average_delay_per_carrier_plot():
     conn.close()
 
 # average_delay_per_carrier_plot()
+
 
 def delays_month_destination(months, destination):
     with sqlite3.connect(db_path) as conn:
@@ -442,27 +459,28 @@ def delays_month_destination(months, destination):
 
 # print(delays_month_destination((1,2,3), 'ORD'))
 
+
 def bins_distance_delay():
     conn = sqlite3.connect(db_path)
     # Define the bins
     bins = range(0, 3001, 200)
-    
+
     # Query the database
     query = """
     SELECT distance, arr_delay
     FROM flights
     """
     df = pd.read_sql_query(query, conn)
-    
+
     # Bin the distances
     df['distance_bins'] = pd.cut(df['distance'], bins)
-    
+
     # Group by the bins and calculate the mean arrival delay
     grouped = df.groupby('distance_bins')['arr_delay'].mean().reset_index()
-    
+
     # Extract the midpoint of each bin for plotting
     grouped['bin_midpoint'] = grouped['distance_bins'].apply(lambda x: x.mid)
-    
+
     # Plot the scatter plot
     plt.scatter(grouped['bin_midpoint'], grouped['arr_delay'])
     plt.xlabel('Distance Bin Midpoint')
@@ -474,66 +492,71 @@ def bins_distance_delay():
 
 # bins_distance_delay()
 
+
 def bins_distance_delay_per_carrier():
     conn = sqlite3.connect(db_path)
     # Define the bins
     bins = range(0, 3001, 200)
-    
+
     # Query the database
     query = """
     SELECT distance, arr_delay, carrier
     FROM flights
     """
     df = pd.read_sql_query(query, conn)
-    
+
     # Bin the distances
     df['distance_bins'] = pd.cut(df['distance'], bins)
-    
+
     # Group by both distance_bins and carrier, and calculate the mean arrival delay
-    grouped = df.groupby(['distance_bins', 'carrier'])['arr_delay'].mean().reset_index()
-    
+    grouped = df.groupby(['distance_bins', 'carrier'])[
+        'arr_delay'].mean().reset_index()
+
     # Extract the midpoint of each bin for plotting
     grouped['bin_midpoint'] = grouped['distance_bins'].apply(lambda x: x.mid)
 
     # Filter carriers with at least 10 bins with data
-    non_missing_counts = grouped.groupby('carrier')['arr_delay'].apply(lambda x: x.notna().sum()).reset_index(name='n_non_missing')
+    non_missing_counts = grouped.groupby('carrier')['arr_delay'].apply(
+        lambda x: x.notna().sum()).reset_index(name='n_non_missing')
     filtered_carriers = non_missing_counts[non_missing_counts['n_non_missing'] >= 10]['carrier']
 
     # Filter the original DataFrame to include only the selected carriers
     grouped_filtered = grouped[grouped['carrier'].isin(filtered_carriers)]
-    
+
     # Get the list of filtered carriers
     carriers = grouped_filtered['carrier'].unique()
-    
+
     # Determine the grid size for subplots
     n_carriers = len(carriers)
     n_cols = 3  # Number of columns in the grid
     n_rows = (n_carriers // n_cols) + (1 if n_carriers % n_cols != 0 else 0)
-    
+
     # Create a grid of subplots
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, n_rows * 3))
     axes = axes.flatten()  # Flatten the 2D array of axes for easy iteration
-    
+
     # Plot a line plot for each filtered carrier in its own subplot
     for i, carrier in enumerate(carriers):
         ax = axes[i]
         carrier_data = grouped_filtered[grouped_filtered['carrier'] == carrier]
-        ax.plot(carrier_data['bin_midpoint'], carrier_data['arr_delay'], marker='o', label=carrier)
+        ax.plot(carrier_data['bin_midpoint'],
+                carrier_data['arr_delay'], marker='o', label=carrier)
         ax.set_title(f'Carrier: {carrier}')
         ax.set_xlabel('Distance Bin Midpoint')
         ax.set_ylabel('Average Arrival Delay')
         ax.grid(True)
         ax.legend()
-    
+
     # Hide any unused subplots
     for j in range(i + 1, len(axes)):
         axes[j].axis('off')
-    
+
     plt.tight_layout()  # Adjust layout to prevent overlap
     plt.show()
     conn.close()
 
 # bins_distance_delay_per_carrier()
+
 
 def top_manufacturers_to_destiantion(destination):
     with sqlite3.connect(db_path) as conn:
@@ -554,7 +577,7 @@ def top_manufacturers_to_destiantion(destination):
             LIMIT 5
         """
         df = pd.read_sql(query, conn).set_index("manufacturer")
-    
+
     plt.figure(figsize=(12, 6))
     plt.bar(df.index, df["num_flights"], color="skyblue")
     plt.xlabel("Manufacturer")
@@ -565,13 +588,15 @@ def top_manufacturers_to_destiantion(destination):
 
 # top_manufacturers_to_destiantion("ATL")
 
-#returns a dict describing how many times each plane type was used for flight trajectory between origin and destination flight
+# returns a dict describing how many times each plane type was used for flight trajectory between origin and destination flight
+
+
 def flights_between_cities(origin, destination):
     ny_airports = {"JFK", "LGA", "EWR"}
     with sqlite3.connect(db_path) as conn:
         if origin not in ny_airports:
             raise ValueError("Origin airport must be from a New York.")
-        
+
         query = f"""
             SELECT COUNT(*) AS count
             FROM airports
@@ -579,7 +604,7 @@ def flights_between_cities(origin, destination):
         """
         if pd.read_sql(query, conn).iloc[0, 0] == 0:
             raise ValueError("Destination airport is not the database.")
-        
+
         query = f"""
             SELECT type, COUNT(*) AS num_flights
             FROM (
@@ -598,5 +623,29 @@ def flights_between_cities(origin, destination):
 
         return pd.read_sql(query, conn).set_index("type")
     conn.close()
-    
+
 # print(flights_between_cities("JFK", "ATL").to_dict()["num_flights"])
+
+
+#########################################################
+# GROUP BY `tailnum` the flights and compute for each of them the average speed. Add the avg. speed to the `planes`
+##########################################################
+def compute_avg_speed(db_path){
+    conn = sqlite3.connect(db_path)
+
+    query_tailnum = """
+        SELECT tailnum, AVG(distance*1.0/air_time) AS avg_speed
+        FROM flights
+        WHERE air_time > 0
+        GROUP BY tailnum
+    """
+    tailnum_speed_df = pd.read_sql_query(query_tailnum, conn)
+    print("Average speed per tailnum:")
+    print(tailnum_speed_df)
+
+    tailnum_speed_df['avg_speed'] = tailnum_speed_df['avg_speed'].round(2)
+    return tailnum_speed_df
+}
+
+
+compute_avg_speed('../flights_database.db')
