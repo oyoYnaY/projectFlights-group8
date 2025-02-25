@@ -7,6 +7,8 @@ from timezonefinder import TimezoneFinder
 import seaborn as sns
 import math
 import sqlite3
+import numpy as np
+from plotly.subplots import make_subplots
 
 
 # =============== Data processing for airports.csv ===============
