@@ -66,7 +66,7 @@ df["dst"] = df.apply(
 # print("missing values after inference:\n", df.isnull().sum())
 # print(df[df["tz"].isnull()])
 # print(df[df["tzone"] == "America/Boise"][["tzone", "tz"]].dropna().drop_duplicates()) # check for missing values in America/Boise
-# df.loc[df["tzone"] == "America/Boise", "tz"] = -7 # fix missing values in America/Boise
+df.loc[df["tzone"] == "America/Boise", "tz"] = -7 # fix missing values in America/Boise
 # print("missing values after final fix:\n", df.isnull().sum())
 
 df.loc[df['tz'] == 8, 'tz'] = -8 # fix incorrect tz value
