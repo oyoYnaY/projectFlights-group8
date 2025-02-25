@@ -628,7 +628,8 @@ def flights_between_cities(origin, destination):
 
 
 #########################################################
-# GROUP BY `tailnum` the flights and compute for each of them the average speed. Add the avg. speed to the `planes`
+# GROUP BY `tailnum` the flights and compute for each of them the average speed.
+# Add the avg. speed to the `planes`
 ##########################################################
 def compute_avg_speed_and_update_db():
     with sqlite3.connect(db_path) as conn:
@@ -650,8 +651,156 @@ def compute_avg_speed_and_update_db():
                         (row['avg_speed'], row['tailnum']))
             # print(f"UPDATE planes SET speed = {row['avg_speed']} WHERE tailnum = {row['tailnum']}")
 
-        conn.commit()
-        conn.close()
-
 
 compute_avg_speed_and_update_db()
+
+
+#########################################################
+# Computation of the flying direction (bearing) from New York to destination
+# airport. Then compute the inner product between flight direction and wind direction.
+##########################################################
+def inner_product_angle(angle1, angle2):
+    """
+    Returns a scalar value between -1 and 1.
+    """
+    # Convert degrees to radians
+    rad1 = math.radians(angle1)
+    rad2 = math.radians(angle2)
+
+    # Dot product of two unit vectors in 2D:
+    #   (sin(rad1), cos(rad1)) dot (sin(rad2), cos(rad2))
+    # = sin(rad1)*sin(rad2) + cos(rad1)*cos(rad2)
+    # = cos(rad1 - rad2)
+    return math.cos(rad1 - rad2)
+
+
+def calculate_compass_bearing(pointA, pointB):
+    """
+    Calculates the bearing between two points.
+
+    Parameters:
+        pointA: tuple of (latitude, longitude) in decimal degrees for the start point.
+        pointB: tuple of (latitude, longitude) in decimal degrees for the destination.
+
+    Returns:
+        The bearing in degrees (from north being 0°).
+    """
+    lat1, lon1 = pointA
+    lat2, lon2 = pointB
+
+    lat1 = math.radians(lat1)
+    lat2 = math.radians(lat2)
+    diff_long = math.radians(lon2 - lon1)
+
+    x = math.sin(diff_long) * math.cos(lat2)
+    y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * \
+        math.cos(lat2) * math.cos(diff_long)
+
+    initial_bearing = math.atan2(x, y)
+
+    initial_bearing = math.degrees(initial_bearing)
+
+    compass_bearing = (initial_bearing + 360) % 360
+
+    return compass_bearing
+
+
+# Example case: Compute bearing angle between Amsterdam and Berlin.
+# Amsterdam Schiphol Airport: (52.3105, 4.7683)
+# Berlin Brandenburg Airport: (52.366667, 13.503333)
+# schiphol = (52.3105, 4.7683)
+# berlin = (52.366667, 13.503333)
+
+# bearing = calculate_compass_bearing(schiphol, berlin)
+# print(
+#     f"The initial bearing from Schiphol Airport to Berlin Brandenburg Airport is {bearing:.1f}°")
+
+def generate_bearing_df():
+    df_flights_cleared = ''
+    with sqlite3.connect(db_path) as conn:
+        query_flights = f'SELECT flight, origin, dest, time_hour FROM flights'
+        query_weather = f'SELECT origin, wind_dir, time_hour FROM weather'
+        query_airports = f'SELECT faa, lat, lon FROM airports'
+
+        cur = conn.cursor()
+
+        cur.execute(query_flights)
+        rows_flights = cur.fetchall()
+        df_flights = pd.DataFrame(rows_flights, columns=[
+                                  x[0] for x in cur.description])
+
+        cur.execute(query_weather)
+        rows_weather = cur.fetchall()
+        df_weather = pd.DataFrame(rows_weather, columns=[
+                                  x[0] for x in cur.description])
+
+        cur.execute(query_airports)
+        rows_airports = cur.fetchall()
+        df_airports = pd.DataFrame(rows_airports, columns=[
+                                   x[0] for x in cur.description])
+
+        # print(df_flights)
+        # print(df_weather)
+        # print(df_airports)
+
+        # 1) Merge df_flights and df_weather on origin/time_hour
+        df_flights = pd.merge(
+            df_flights,
+            df_weather,
+            on=["origin", "time_hour"],
+            how="inner"
+        )
+
+        # 2) Merge with df_airports to get lat/lon for the origin airport
+        df_flights = pd.merge(
+            df_flights,
+            df_airports[["faa", "lat", "lon"]],
+            left_on="origin",
+            right_on="faa",
+            how="left"
+        )
+        df_flights.rename(
+            columns={"lat": "lat_origin", "lon": "lon_origin"}, inplace=True)
+        # Remove the duplicate 'faa' column
+        df_flights.drop("faa", axis=1, inplace=True)
+
+        # 3) Merge with df_airports to get lat/lon for the destination airport
+        df_flights = pd.merge(
+            df_flights,
+            df_airports[["faa", "lat", "lon"]],
+            left_on="dest",
+            right_on="faa",
+            how="left"
+        )
+        df_flights.rename(
+            columns={"lat": "lat_dest", "lon": "lon_dest"}, inplace=True)
+        # Remove the duplicate 'faa' column
+        df_flights.drop("faa", axis=1, inplace=True)
+
+        bearings = []
+        inner_products = []
+
+        for _, row in df_flights.iterrows():
+            origin_coods = (row['lat_origin'], row['lon_origin'])
+            dest_coords = (row['lat_dest'], row['lon_dest'])
+            bearing = calculate_compass_bearing(origin_coods, dest_coords)
+            bearings.append(bearing)
+
+        df_flights['bearing'] = bearings
+        # print(df_flights.dropna())
+
+        for _, row in df_flights.iterrows():
+            inner_product = inner_product_angle(
+                row['wind_dir'], row['bearing'])
+            inner_products.append(
+                'positive' if inner_product >= 0 else 'negative')
+
+        df_flights['innerProd'] = inner_products
+
+    return df_flights_cleared
+
+
+# Example case
+# df_flights_bearing = generate_bearing_df()
+# df_flights_bearing_small = df_flights_bearing.copy().dropna().head(5)
+# print(df_flights_bearing_small)
