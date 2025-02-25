@@ -440,6 +440,49 @@ conn.close()
 
 ### plane direction
 
+## Part 4  
+### Missing Values
+
+This part is similar to the [Data Cleaning](#data-cleaning) section, but in more detail.
+First, we print the missing values:
+```python
+print("missing values in each column:\n", df.isnull().sum())
+```
+We obtained the following missing values for each column:
+
+| Column | Missing Values |
+|--------|----------------|
+| faa    | 0              |
+| name   | 0              |
+| lat    | 0              |
+| lon    | 0              |
+| alt    | 0              |
+| tz     | 48             |
+| dst    | 48             |
+| tzone  | 119            |
+
+Then, we fill in the missing values using the following methods:
+
+1. **Infer Timezone Based on Geographic Coordinates (tzone):**  
+   If there are missing values in the `tzone` column, we use the `TimezoneFinder` library to determine the correct timezone for each airport based on its latitude and longitude, thereby filling in the missing `tzone` values.
+
+2. **Fill in the Timezone Offset (tz) Using a Known Mapping:**  
+   First, we extract the existing mapping between `tzone` and `tz` from the data and construct a mapping dictionary. Then, for missing values in the `tz` column, we fill them in by looking up the corresponding `tz` value using the `tzone`.
+
+3. **Infer Daylight Saving Time (dst) Based on tzone:**  
+   For the missing `dst` values, we define a custom function `infer_dst_from_tzone` that determines the daylight saving time setting based on the content of `tzone`:
+   - If `tzone` contains `"America/"`, set it to `'A'`.
+   - If `tzone` contains `"Europe/"`, set it to `'E'`.
+   - Otherwise, set it to `'N'`.
+   - If `tzone` is missing, set it to `'U'`.
+
+4. **Correct Erroneous Data:**  
+   We also correct any erroneous data. For example, for records in the `tz` column with a value of `8`, we correct them to `-8` to ensure data accuracy.
+
+### Look for duplicates...
+
+### ...
+
 ## Dashboard Features Demo
 
 This part for add any ideas and build the basic demo to test your idea.
