@@ -630,22 +630,28 @@ def flights_between_cities(origin, destination):
 #########################################################
 # GROUP BY `tailnum` the flights and compute for each of them the average speed. Add the avg. speed to the `planes`
 ##########################################################
-def compute_avg_speed(db_path){
-    conn = sqlite3.connect(db_path)
+def compute_avg_speed_and_update_db():
+    with sqlite3.connect(db_path) as conn:
+        query_tailnum = """
+            SELECT tailnum, AVG(distance*1.0/air_time) AS avg_speed
+            FROM flights
+            WHERE air_time > 0
+            GROUP BY tailnum
+        """
 
-    query_tailnum = """
-        SELECT tailnum, AVG(distance*1.0/air_time) AS avg_speed
-        FROM flights
-        WHERE air_time > 0
-        GROUP BY tailnum
-    """
-    tailnum_speed_df = pd.read_sql_query(query_tailnum, conn)
-    print("Average speed per tailnum:")
-    print(tailnum_speed_df)
+        tailnum_speed_df = pd.read_sql_query(query_tailnum, conn)
+        tailnum_speed_df['avg_speed'] = tailnum_speed_df['avg_speed'].round(2)
 
-    tailnum_speed_df['avg_speed'] = tailnum_speed_df['avg_speed'].round(2)
-    return tailnum_speed_df
-}
+        print(tailnum_speed_df)
+
+        cur = conn.cursor()
+        for _, row in tailnum_speed_df.iterrows():
+            cur.execute("UPDATE planes SET speed = ? WHERE tailnum = ?",
+                        (row['avg_speed'], row['tailnum']))
+            # print(f"UPDATE planes SET speed = {row['avg_speed']} WHERE tailnum = {row['tailnum']}")
+
+        conn.commit()
+        conn.close()
 
 
-compute_avg_speed('../flights_database.db')
+compute_avg_speed_and_update_db()
