@@ -475,8 +475,20 @@ Then, we fill in the missing values using the following methods:
    - If `tzone` contains `"Europe/"`, set it to `'E'`.
    - Otherwise, set it to `'N'`.
    - If `tzone` is missing, set it to `'U'`.
+  
+4. **Manual Filling of Missing Values:**
+   ```python
+   print(df[df["tz"].isnull()])
+   ```
+   The output shows:
+   
+     | faa | name | lat | lon | alt | tz | dst | tzone |
+    |-----|------|-----|-----|-----|----|-----|-------|
+    | BYI | Burley Municipal Airport | 42.542599 | -113.772003 | 4150 | NaN | A | America/Boise |
 
-4. **Correct Erroneous Data:**  
+    Because the auto-inference (using TimezoneFinder and the mapping dictionary) might fail or return an incorrect value for "America/Boise", we need     to manually override it with the correct value to ensure the data's accuracy.
+
+6. **Correct Erroneous Data:**  
    We also correct any erroneous data. For example, for records in the `tz` column with a value of `8`, we correct them to `-8` to ensure data accuracy.
 
 ### Look for duplicates...
