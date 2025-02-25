@@ -343,6 +343,7 @@ Plot the flight destinations and we get flight statistics for JFK on January 1st
 We look at the delays of planes depending on the a) airline operating, b) month and destination, c) distance of the flight.
 
 #### Delay per carrier
+
 This requires joining the table airlines on flights to recover the full names of the airlines from their two-letter abbreviations. Grouping and joining is performed over these abreviatios as they are unique to their airlines. To plot these delays, simply call
 
 ```python
@@ -350,6 +351,7 @@ print(average-delay_per_carrier_plot())
 ```
 
 Resulting in
+
 <div align="center">
   <img src="figures/avg-delay-per-carrier.png" alt="Bar plot showing the average delay per carrier" width="55%"/>
 </div>
@@ -357,14 +359,17 @@ Resulting in
 We found the airlines with the lowest delays are the Southwest Airlines Co. and the Frontier Airlines Inc. The greatest delays are to be expected when travelling with Delta Air Lines Inc. The difference between highest and lower average delays is around 30 minutes.
 
 #### Delays per destination for given months
+
 The flights database is filtered for the given months and destination. Then the number of rows with arr_delay > 0 is counted. To correctly use the function delays_motths_destination(months, destination), provide months as numerical values in a tuple and destination as the three letters encoding an airport as a string. For example,
 
 ```python
 delays_motths_destination((1,2,3), 'ORD')
 ```
+
 Returns 1898 as the number of delayed flights in January, February and March from JFK to O'Hare International Airport in Chicago (ORD).
 
 #### Correlation between the distance and the delay
+
 Distance can be expected to correlate positively with the average delay. Longer flight could controbute to proportionally longer elays. On another hand, more time in the air allows for potential 'catchig up' with the delay caused when departing. To investigate this relationship, we attempt at plotting a scatter plot of the delays against the distance. Since distance is a continuous feature, it needs to be first cut into bins of width 200km to make sense of th unique values. This motivated us to convert part of the database needed into a Pandas datafarme which allows for easier manipulation of data for this purpose than SQL. To plot the scatter plot simply
 
 ```python
@@ -372,6 +377,7 @@ bins_distance_delay()
 ```
 
 Resulting in
+
 <div align="center">
   <img src="figures/avg-delay-dst.png" alt="Scatter plot showing the average delay per distance bin of width 200km" width="55%"/>
 </div>
@@ -383,12 +389,12 @@ bins_distance_delay_per_carrier()
 ```
 
 To obtain
+
 <div align="center">
   <img src="figures/avg-delay-dst-carrier.png" alt="Scatter plot showing the average delay per distance bin of width 200km" width="55%"/>
 </div>
 
-As previously, the correlation is not clear. However, it is more common for the delay to decrease as the length of flight increases. This trend is primarily visible in case of Delta Airlines. 
-
+As previously, the correlation is not clear. However, it is more common for the delay to decrease as the length of flight increases. This trend is primarily visible in case of Delta Airlines.
 
 ### airport-airport analysis
 
@@ -438,20 +444,99 @@ conn.close()
   <img src="figures/table_updated_speed.png" alt="Flights from JFK on January 1st" />
 </div>
 
-### plane direction
+### Plane direction
 
-## Part 4  
+We first execute three `SELECT` queries:
+
+```python
+'SELECT flight, origin, dest, time_hour FROM flights'
+'SELECT origin, wind_dir, time_hour FROM weather'
+'SELECT faa, lat, lon FROM airports'
+```
+
+We save the results of the queries in three dataframes `df_flights`, `df_weather`, and `df_airports`. Then we perform some merging between the dataframes:
+
+```python
+# 1) Merge df_flights and df_weather on origin/time_hour
+df_flights = pd.merge(
+    df_flights,
+    df_weather,
+    on=["origin", "time_hour"],
+    how="inner"
+)
+
+# 2) Merge with df_airports to get lat/lon for the origin airport
+df_flights = pd.merge(
+    df_flights,
+    df_airports[["faa", "lat", "lon"]],
+    left_on="origin",
+    right_on="faa",
+    how="left"
+)
+df_flights.rename(columns={"lat": "lat_origin", "lon": "lon_origin"}, inplace=True)
+df_flights.drop("faa", axis=1, inplace=True)  # Remove the duplicate 'faa' column
+
+# 3) Merge with df_airports to get lat/lon for the destination airport
+df_flights = pd.merge(
+    df_flights,
+    df_airports[["faa", "lat", "lon"]],
+    left_on="dest",
+    right_on="faa",
+    how="left"
+)
+df_flights.rename(columns={"lat": "lat_dest", "lon": "lon_dest"}, inplace=True)
+df_flights.drop("faa", axis=1, inplace=True)  # Remove the duplicate 'faa' column
+```
+
+For every row in `df_flights` we calculate the compass bearning by using the function
+`calculate_compass_bearing`, which takes the coordinates of the origin and destination airport as arguments:
+
+```python
+for _, row in df_flights.iterrows():
+    origin_coods = (row['lat_origin'], row['lon_origin'])
+    dest_coords = (row['lat_dest'], row['lon_dest'])
+    bearing = calculate_compass_bearing(origin_coods, dest_coords)
+    bearings.append(bearing)
+
+df_flights['bearing'] = bearings
+```
+
+In the end we computed the inner product between the compass bearing and wind direction (both in angle):
+
+```python
+for _, row in df_flights.iterrows():
+    inner_product = inner_product_angle(row['wind_dir'], row['bearing'])
+    inner_products.append('positive' if inner_product >= 0 else 'negative')
+
+df_flights['innerProd'] = inner_products
+```
+
+The `df_flights` will have this structure.
+![alt df_flights_with_bearing_and_wind](figures/bearing_and_wind_df.png)
+
+In the end, we show the graphs of the first rows where we use a polar histogram to display the wind direction and compass bearing.
+
+<div align="center">
+  <img src="figures/positive_inner_prod.png" alt="Positive inner product" width="49%"/>
+  <img src="figures/negative_inner_prod.png" alt="Negative inner product" width="49%"/>
+</div>
+We can observe that a positive inner product indicates that the wind angle is favorable to the plane direction, meanwhile, a negative inner product indicates that the wind goes against the plane when in air
+
+## Part 4
+
 ### Missing Values
 
 This part is similar to the [Data Cleaning](#data-cleaning) section, but in more detail.
 First, we print the missing values:
+
 ```python
 print("missing values in each column:\n", df.isnull().sum())
 ```
+
 We obtained the following missing values for each column:
 
 | Column | Missing Values |
-|--------|----------------|
+| ------ | -------------- |
 | faa    | 0              |
 | name   | 0              |
 | lat    | 0              |
@@ -471,24 +556,27 @@ Then, we fill in the missing values using the following methods:
 
 3. **Infer Daylight Saving Time (dst) Based on tzone:**  
    For the missing `dst` values, we define a custom function `infer_dst_from_tzone` that determines the daylight saving time setting based on the content of `tzone`:
+
    - If `tzone` contains `"America/"`, set it to `'A'`.
    - If `tzone` contains `"Europe/"`, set it to `'E'`.
    - Otherwise, set it to `'N'`.
    - If `tzone` is missing, set it to `'U'`.
-  
+
 4. **Manual Filling of Missing Values:**
+
    ```python
    print(df[df["tz"].isnull()])
    ```
+
    The output shows:
-   
-     | faa | name | lat | lon | alt | tz | dst | tzone |
-    |-----|------|-----|-----|-----|----|-----|-------|
-    | BYI | Burley Municipal Airport | 42.542599 | -113.772003 | 4150 | NaN | A | America/Boise |
 
-    Because the auto-inference (using TimezoneFinder and the mapping dictionary) might fail or return an incorrect value for "America/Boise", we need     to manually override it with the correct value to ensure the data's accuracy.
+   | faa | name                     | lat       | lon         | alt  | tz  | dst | tzone         |
+   | --- | ------------------------ | --------- | ----------- | ---- | --- | --- | ------------- |
+   | BYI | Burley Municipal Airport | 42.542599 | -113.772003 | 4150 | NaN | A   | America/Boise |
 
-6. **Correct Erroneous Data:**  
+   Because the auto-inference (using TimezoneFinder and the mapping dictionary) might fail or return an incorrect value for "America/Boise", we need to manually override it with the correct value to ensure the data's accuracy.
+
+5. **Correct Erroneous Data:**  
    We also correct any erroneous data. For example, for records in the `tz` column with a value of `8`, we correct them to `-8` to ensure data accuracy.
 
 ### Look for duplicates...
