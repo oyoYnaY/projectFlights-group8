@@ -11,20 +11,22 @@ import base64
 import datetime
 
 # --------------------- Data Loading and Preprocessing ---------------------
-# Read the airports data from the database
 db_path = "../flights_database.db"
 conn = sqlite3.connect(db_path)
 df = pd.read_sql_query("SELECT * FROM airports", conn)
 conn.close()
 
-# CSV_FILE_PATH is kept for backup purposes
-CSV_FILE_PATH = "../data/airports.csv"
-
-# Perform missing value inference on the airports data
+# use timezonefinder to fill in missing timezone data
 tf = TimezoneFinder()
-df["tzone"] = df.apply(lambda row: tf.timezone_at(lng=row["lon"], lat=row["lat"]) if pd.isnull(row["tzone"]) else row["tzone"], axis=1)
+df["tzone"] = df.apply(
+    lambda row: tf.timezone_at(lng=row["lon"], lat=row["lat"]) if pd.isnull(row["tzone"]) else row["tzone"],
+    axis=1,
+)
 tz_mapping_dynamic = dict(df[["tzone", "tz"]].dropna().drop_duplicates().values)
-df["tz"] = df.apply(lambda row: tz_mapping_dynamic.get(row["tzone"], row["tz"]) if pd.isnull(row["tz"]) else row["tz"], axis=1)
+df["tz"] = df.apply(
+    lambda row: tz_mapping_dynamic.get(row["tzone"], row["tz"]) if pd.isnull(row["tz"]) else row["tz"],
+    axis=1,
+)
 def infer_dst_from_tzone(tzone):
     if pd.isnull(tzone):
         return 'U'
@@ -34,14 +36,51 @@ def infer_dst_from_tzone(tzone):
         return 'E'
     else:
         return 'N'
-df["dst"] = df.apply(lambda row: row["dst"] if pd.notnull(row["dst"]) else infer_dst_from_tzone(row["tzone"]), axis=1)
+df["dst"] = df.apply(
+    lambda row: row["dst"] if pd.notnull(row["dst"]) else infer_dst_from_tzone(row["tzone"]),
+    axis=1,
+)
 df.loc[df["tzone"] == "America/Boise", "tz"] = -7
 df.loc[df["tz"] == 8, "tz"] = -8
 df["tz"] = df["tz"].astype("Int64")
 
+# --------------------- Define Helper Functions ---------------------
+# if input is 3 letters, search for FAA code, if input contains "airport", search for airport name, else return None
+def get_airport_from_input(input_str, df):
+    input_str = input_str.strip()
+    if not input_str:
+        return None
+    if len(input_str) == 3:
+        result = df[df['faa'].str.lower() == input_str.lower()]
+        if not result.empty:
+            return result.iloc[0]
+    if "airport" in input_str.lower():
+        result = df[df['name'].str.lower().str.contains(input_str.lower())]
+        if not result.empty:
+            return result.iloc[0]
+    return None
+
+# helper function to get city coordinates
+def get_city_coordinates(city_name):
+    city_name = city_name.lower()
+    matches = city_df[city_df["city_ascii"].str.lower().str.contains(city_name, na=False)]
+    if not matches.empty:
+        best_match = matches.iloc[0]
+        return best_match["lat"], best_match["lng"]
+    return None
+
+# helper function to calculate haversine distance
+def find_nearest_airport(city_name, df):
+    city_coords = get_city_coordinates(city_name)
+    if city_coords is None:
+        return None
+    df["distance_to_city"] = df.apply(lambda row: geopy.distance.geodesic(city_coords, (row["lat"], row["lon"])).km, axis=1)
+    return df.loc[df["distance_to_city"].idxmin()]
+
 # --------------------- Streamlit Page Configuration ---------------------
 st.set_page_config(layout="wide")
-# Translation dictionary with an expanded language list including Romania
+
+# --------------------- Translation Configuration ---------------------
 translations = {
     "language_options": ["English", "中文", "Hrvatski", "Nederlands", "Romania"],
     "project_flight_title": {
@@ -66,18 +105,18 @@ translations = {
         "Romania": "Selectați limba"
     },
     "enter_departure_city": {
-        "English": "Enter departure city name:",
-        "中文": "输入出发城市名称:",
-        "Hrvatski": "Unesite grad polaska:",
-        "Nederlands": "Voer de naam van de vertrekstad in:",
-        "Romania": "Introduceți numele orașului de plecare:"
+        "English": "Enter departure city, FAA code, or airport name:",
+        "中文": "输入出发城市、FAA代码或机场名称:",
+        "Hrvatski": "Unesite grad polaska, FAA kod ili naziv zračne luke:",
+        "Nederlands": "Voer de vertrekstad, FAA-code of luchthavennaam in:",
+        "Romania": "Introduceți orașul de plecare, codul FAA sau numele aeroportului:"
     },
     "enter_arrival_city": {
-        "English": "Enter arrival city name:",
-        "中文": "输入到达城市名称:",
-        "Hrvatski": "Unesite grad dolaska:",
-        "Nederlands": "Voer de naam van de aankomststad in:",
-        "Romania": "Introduceți numele orașului de sosire:"
+        "English": "Enter arrival city, FAA code, or airport name:",
+        "中文": "输入到达城市、FAA代码或机场名称:",
+        "Hrvatski": "Unesite grad dolaska, FAA kod ili naziv zračne luke:",
+        "Nederlands": "Voer de aankomststad, FAA-code of luchthavennaam in:",
+        "Romania": "Introduceți orașul de sosire, codul FAA sau numele aeroportului:"
     },
     "select_default_map_type": {
         "English": "Select Default Map Type:",
@@ -120,20 +159,6 @@ translations = {
         "Hrvatski": "Procijenjeno vrijeme leta:",
         "Nederlands": "Geschatte vliegtijd:",
         "Romania": "Timp estimat de zbor:"
-    },
-    "select_map_mode": {
-        "English": "Select Map Mode:",
-        "中文": "选择地图模式:",
-        "Hrvatski": "Odaberite način prikaza karte:",
-        "Nederlands": "Selecteer kaartmodus:",
-        "Romania": "Selectați modul de afișare a hărții:"
-    },
-    "flight_path": {
-        "English": "Flight Path",
-        "中文": "航线",
-        "Hrvatski": "Putanja leta",
-        "Nederlands": "Vluchtpad",
-        "Romania": "Traiectoria zborului"
     },
     "flight_progress": {
         "English": "Flight Progress",
@@ -302,6 +327,13 @@ translations = {
         "Hrvatski": "Detalji leta:",
         "Nederlands": "Vluchtdetails:",
         "Romania": "Detalii zbor:"
+    },
+    "flight_path": {
+        "English": "Flight Path",
+        "中文": "航线",
+        "Hrvatski": "Putanja leta",
+        "Nederlands": "Vluchtpad",
+        "Romania": "Traiectoria zborului"
     }
 }
 
@@ -309,15 +341,17 @@ def t(key, lang):
     return translations[key].get(lang, key)
 
 # --------------------- Page Selection ---------------------
-# Pages: Dashboard, New Data Entry, Developer Tool
 col_lang, col_page = st.columns(2)
 with col_lang:
     selected_language = st.selectbox(label=t("select_language", "English"), options=translations["language_options"])
 with col_page:
-    selected_page = st.selectbox(label=t("select_page", selected_language),
-                                 options=[t("dashboard", selected_language),
-                                          t("new_data_entry", selected_language),
-                                          "Developer Tool"])
+    selected_page = st.selectbox(
+        label=t("select_page", selected_language),
+        options=[t("dashboard", selected_language),
+                 t("new_data_entry", selected_language),
+                 "General Results",
+                 "Developer Tool"]
+    )
 
 # --------------------- Other Data Loading ---------------------
 def load_city_data():
@@ -348,35 +382,11 @@ def find_nearest_airport(city_name, df):
     df["distance_to_city"] = df.apply(lambda row: haversine_distance(city_coords, (row["lat"], row["lon"])), axis=1)
     return df.loc[df["distance_to_city"].idxmin()]
 
-def display_visualizations(data):
-    col1, col2 = st.columns(2)
-    with col1:
-        fig_alt = px.histogram(
-            data, x="alt", nbins=50,
-            title=t("altitude_distribution", selected_language),
-            color_discrete_sequence=["blue"]
-        )
-        st.plotly_chart(fig_alt, use_container_width=True, key="fig_alt")
-    with col2:
-        fig_tz = px.histogram(
-            data, x="tz", nbins=20,
-            title=t("time_zone_distribution", selected_language),
-            color_discrete_sequence=["orange"]
-        )
-        st.plotly_chart(fig_tz, use_container_width=True, key="fig_tz")
-    fig_scatter = px.scatter(
-        data, x="alt", y="distance",
-        title=t("altitude_vs_distance", selected_language),
-        color_discrete_sequence=["green"], opacity=0.7
-    )
-    st.plotly_chart(fig_scatter, use_container_width=True, key="fig_scatter")
-
-df = df.copy()  # Avoid modifying the original DataFrame
+df = df.copy()  # make a copy of the original dataframe
 
 # --------------------- New Data Entry Page ---------------------
 if selected_page == t("new_data_entry", selected_language):
     st.subheader(t("new_data_entry", selected_language))
-    # Choose Table to Enter New Data
     table_choice = st.selectbox("Choose Table to Enter New Data", ["Airports", "Flights", "Airlines", "Planes", "Weather"], key="table_choice")
     
     if table_choice == "Airports":
@@ -541,7 +551,6 @@ if selected_page == t("new_data_entry", selected_language):
                 st.session_state["new_weather"].append(new_weather)
                 st.success("New Weather Data Added!")
     
-    # Display new data submitted (if none, show info message)
     st.subheader(t("new_data_submitted", selected_language))
     if "new_airports" in st.session_state and st.session_state["new_airports"]:
         st.write("Airports:")
@@ -575,6 +584,85 @@ if selected_page == t("new_data_entry", selected_language):
         
     st.info(t("note_session", selected_language))
 
+# --------------------- General Results Page [Need Fixd!] ---------------------
+elif selected_page == "General Results":
+    st.subheader("General Results")
+    # Load data from SQLite database
+    conn = sqlite3.connect(db_path)
+    query = "SELECT * FROM flights WHERE year = 2023"
+    flights_df = pd.read_sql_query(query, conn)
+    conn.close()
+    flights_df['flight_date'] = pd.to_datetime(flights_df[['year', 'month', 'day']])
+    # select flights in 2023, maybe need to change the date range in the future
+    start_date = datetime.date(2023, 1, 1)
+    end_date = datetime.date(2023, 12, 31)
+    mask = (flights_df['flight_date'] >= pd.to_datetime(start_date)) & (flights_df['flight_date'] <= pd.to_datetime(end_date))
+    flights_df = flights_df[mask]
+    
+    if not flights_df.empty:
+        conn = sqlite3.connect(db_path)
+        airlines_df = pd.read_sql_query("SELECT * FROM airlines", conn)
+        planes_df = pd.read_sql_query("SELECT * FROM planes", conn)
+        airports_df = pd.read_sql_query("SELECT * FROM airports", conn)
+        weather_df = pd.read_sql_query("SELECT * FROM weather", conn)
+        conn.close()
+        
+        flights_df = flights_df.merge(airlines_df, on='carrier', how='left', suffixes=('', '_airline'))
+        flights_df = flights_df.rename(columns={"name": "name_airline"})
+        flights_df = flights_df.merge(planes_df, on='tailnum', how='left', suffixes=('', '_plane'))
+        flights_df = flights_df.merge(airports_df[['faa', 'name', 'lat', 'lon']], left_on='origin', right_on='faa', how='left', suffixes=('', '_origin'))
+        flights_df = flights_df.rename(columns={'name': 'origin_name', 'lat': 'origin_lat', 'lon': 'origin_lon'})
+        flights_df = flights_df.merge(airports_df[['faa', 'name', 'lat', 'lon']], left_on='dest', right_on='faa', how='left', suffixes=('', '_dest'))
+        flights_df = flights_df.rename(columns={'name': 'dest_name', 'lat': 'dest_lat', 'lon': 'dest_lon'})
+        flights_df = flights_df.merge(weather_df[['origin','year','month','day','hour','wind_dir','wind_speed']],
+                                      on=['origin','year','month','day','hour'], how='left')
+        
+        flights_df['distance_km'] = flights_df['distance'] * 1.60934
+        flights_df['speed'] = flights_df.apply(lambda row: (row['distance_km'] * 60 / row['air_time']) if row['air_time'] and row['air_time'] > 0 else None, axis=1)
+        
+        # figure 1 - average flight speed by airplane model
+        avg_speed_by_model = flights_df.groupby("model")["speed"].mean().reset_index()
+        fig_speed_model = px.bar(avg_speed_by_model, x="model", y="speed", color="model",
+                                 title="Average Flight Speed by Airplane Model (km/h)",
+                                 labels={"speed": "Average Speed (km/h)", "model": "Airplane Model"})
+        
+        # figure 2 - average departure delay by origin airport
+        avg_dep_delay_by_airport = flights_df.groupby("origin")["dep_delay"].mean().reset_index()
+        fig_dep_delay = px.bar(avg_dep_delay_by_airport, x="origin", y="dep_delay", color="origin",
+                               title="Average Departure Delay by Origin Airport (min)",
+                               labels={"dep_delay": "Average Departure Delay (min)", "origin": "Origin Airport"})
+        
+        # figure 3 - top 10 most frequent routes from NYC airports
+        nyc_airports = ["EWR", "JFK", "LGA"]
+        nyc_flights = flights_df[flights_df["origin"].isin(nyc_airports)]
+        route_counts = nyc_flights.groupby(["origin", "dest"]).size().reset_index(name="count")
+        route_counts = route_counts.sort_values(by="count", ascending=False).head(10)
+        fig_routes = px.bar(route_counts, x="origin", y="count", color="dest",
+                            title="Top 10 Most Frequent Routes from NYC Airports",
+                            labels={"count": "Flight Count", "origin": "Origin", "dest": "Destination"})
+        
+        # figure 4 - wind speed vs departure delay
+        fig_wind_delay = px.scatter(flights_df, x="wind_speed", y="dep_delay", 
+                                    title="Wind Speed vs Departure Delay", color="origin",
+                                    labels={"wind_speed": "Wind Speed (mph)", "dep_delay": "Departure Delay (min)"})
+        
+        # figure 5 - air time distribution
+        fig_air_time = px.histogram(flights_df, x="air_time", nbins=50, color="origin",
+                                    title="Flight Time Distribution (minutes)",
+                                    labels={"air_time": "Air Time (min)"})
+        
+        st.subheader("General Results")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.plotly_chart(fig_speed_model, use_container_width=True)
+            st.plotly_chart(fig_dep_delay, use_container_width=True)
+        with col2:
+            st.plotly_chart(fig_routes, use_container_width=True)
+            st.plotly_chart(fig_wind_delay, use_container_width=True)
+        st.plotly_chart(fig_air_time, use_container_width=True)
+    else:
+        st.warning("No flights found for the given date range in General Results.")
+
 # --------------------- Developer Tool Page ---------------------
 elif selected_page == "Developer Tool":
     st.subheader("Developer Tool")
@@ -583,7 +671,6 @@ elif selected_page == "Developer Tool":
     if st.button("Run Query"):
         try:
             conn = sqlite3.connect(db_path)
-            # If the query starts with 'select', return the result as a DataFrame
             if sql_query.strip().lower().startswith("select"):
                 result_df = pd.read_sql_query(sql_query, conn)
                 st.write("Query Result:")
@@ -599,7 +686,6 @@ elif selected_page == "Developer Tool":
 
 # --------------------- Dashboard Page ---------------------
 else:
-    # If new airports data exists in session_state, append it to the main dataframe
     if "new_airports" in st.session_state and st.session_state["new_airports"]:
         new_df = pd.DataFrame(st.session_state["new_airports"])
         df = pd.concat([df, new_df], ignore_index=True)
@@ -643,7 +729,6 @@ else:
         unsafe_allow_html=True
     )
     
-    # Query flights by date range (default End Date is 2023-01-02)
     st.sidebar.markdown(t("query_flights_date_range", selected_language))
     start_date = st.sidebar.date_input("Start Date", value=datetime.date(2023, 1, 1),
                                        min_value=datetime.date(2023, 1, 1), max_value=datetime.date(2023, 12, 31),
@@ -684,7 +769,6 @@ else:
         ).reset_index()
         flights_df = flights_df.merge(route_stats, on=['origin','dest'], how='left')
         flights_df['distance_km'] = flights_df['distance'] * 1.60934
-        # Calculate speed (km/h) = (distance_km * 60) / air_time (in minutes)
         flights_df['speed'] = flights_df.apply(lambda row: (row['distance_km'] * 60 / row['air_time']) if row['air_time'] and row['air_time'] > 0 else None, axis=1)
         
         total_flights = len(flights_df)
@@ -719,7 +803,7 @@ else:
             'manufacturer',
             'avg_dep_delay',
             'distance_km',
-            'speed',            # calculated spped km/h
+            'speed',
             'dest_lat',
             'dest_lon',
             'wind_dir',
@@ -729,7 +813,7 @@ else:
     else:
         st.sidebar.warning("No flights found for the given date range")
     
-    # ----------------- Sidebar Filters and Inputs -----------------
+    # --------------------- Sidebar Filters and Inputs ---------------------
     destination_1 = st.sidebar.text_input(t("enter_departure_city", selected_language), key="destination_1")
     destination_2 = st.sidebar.text_input(t("enter_arrival_city", selected_language), key="destination_2")
     map_type = st.sidebar.radio(t("select_default_map_type", selected_language), ["US", "World"])
@@ -737,7 +821,7 @@ else:
     selected_tz = st.sidebar.selectbox(t("select_time_zone", selected_language), options=tz_options, index=0)
     filtered_df = df if selected_tz == 'All' else df[df['tz'] == selected_tz]
     
-    # ----------------- Display Visualizations for tz -----------------
+    # --------------------- Display Additional Visualizations ---------------------
     def display_visualizations(data):
         col1, col2 = st.columns(2)
         with col1:
@@ -761,8 +845,7 @@ else:
         )
         st.plotly_chart(fig_scatter, use_container_width=True, key="fig_scatter")
     
-    # ----------------- Main Page Content and Visualizations layout -----------------
-    
+    # --------------------- Main Page Content and Visualizations Layout ---------------------
     with st.expander(t("flight_details", selected_language)):
         st.dataframe(flights_display)
         st.write(t("total_flights", selected_language).format(start_date=start_date, end_date=end_date, total_flights=total_flights))
@@ -772,19 +855,31 @@ else:
         st.dataframe(type_counts)
     col_left, col_right = st.columns([2, 1])
     
-    
     with col_left:
         if destination_1 and destination_2:
-            airport_1 = find_nearest_airport(destination_1, df)
-            airport_2 = find_nearest_airport(destination_2, df)
+            airport_1 = get_airport_from_input(destination_1, df)
+            if airport_1 is None:
+                airport_1 = find_nearest_airport(destination_1, df)
+            airport_2 = get_airport_from_input(destination_2, df)
+            if airport_2 is None:
+                airport_2 = find_nearest_airport(destination_2, df)
             if airport_1 is not None and airport_2 is not None:
-                distance_km = haversine_distance((airport_1['lat'], airport_1['lon']), (airport_2['lat'], airport_2['lon']))
-                flight_time_hr = distance_km / 600.0
+                route_flights = flights_df[(flights_df['origin'] == airport_1['faa']) & (flights_df['dest'] == airport_2['faa'])]
+                if not route_flights.empty:
+                    avg_distance = route_flights['distance_km'].mean()
+                    avg_speed = route_flights['speed'].mean()
+                else:
+                    avg_distance = haversine_distance((airport_1['lat'], airport_1['lon']),
+                                                      (airport_2['lat'], airport_2['lon']))
+                    avg_speed = 600.0
+                flight_time_hr = avg_distance / avg_speed
                 st.markdown(f"{t('nearest_airport_1', selected_language)} {airport_1['name']} ({airport_1['faa']})")
                 st.markdown(f"{t('nearest_airport_2', selected_language)} {airport_2['name']} ({airport_2['faa']})")
-                st.markdown(f"{t('distance', selected_language)} {distance_km:.2f} km")
+                st.markdown(f"{t('distance', selected_language)} {avg_distance:.2f} km")
                 st.markdown(f"{t('estimated_flight_time', selected_language)} {flight_time_hr:.2f} hours")
+                st.markdown('<div style="max-width:300px;">', unsafe_allow_html=True)
                 flight_progress = st.slider(t("flight_progress", selected_language), 0.0, flight_time_hr, 0.0, step=0.1)
+                st.markdown('</div>', unsafe_allow_html=True)
                 progress_ratio = flight_progress / flight_time_hr if flight_time_hr > 0 else 0
                 current_lat = airport_1['lat'] + progress_ratio * (airport_2['lat'] - airport_1['lat'])
                 current_lon = airport_1['lon'] + progress_ratio * (airport_2['lon'] - airport_1['lon'])
@@ -846,7 +941,7 @@ else:
             fig_default.update_layout(coloraxis_colorbar=dict(title="Altitude"))
             st.plotly_chart(fig_default, use_container_width=True, key="default-map")
         st.plotly_chart(fig_avg_delay, use_container_width=True, key="fig_avg_delay")
-        
+    
     with col_right:
         st.plotly_chart(fig_manufacturers, use_container_width=True, key="fig_manufacturers")
         display_visualizations(filtered_df)
