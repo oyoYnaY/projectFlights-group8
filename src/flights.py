@@ -9,7 +9,7 @@ import math
 import sqlite3
 import numpy as np
 from plotly.subplots import make_subplots
-import datetime
+import datetime 
 
 
 
@@ -908,3 +908,41 @@ duplicate_flights = find_duplicate_flights()
 # print("Duplicate flights:", duplicate_flights)
 # prin duplicate flights 2023-1-10 JFK BOS 840 YX N725MQ
 # print(df_flights[(df_flights['year'] == 2023) & (df_flights['month'] == 1) & (df_flights['day'] == 10) & (df_flights['origin'] == 'JFK') & (df_flights['dest'] == 'BOS')& (df_flights['sched_dep_time'] == 840) & (df_flights['carrier'] == 'YX')]) 
+
+# covert to datetime objects
+def flights_with_dtime_objects():
+    def parse_dtime(year, month, day, num):
+        # If the time value is missing, return a missing value indicator.
+        if pd.isna(num):
+            return pd.NA
+
+        # If the time is 2400, consider it as midnight of the next day.
+        if num == 2400:
+            return datetime.datetime(year=year, month=month, day=day) + datetime.timedelta(days=1)
+        
+        # Split the number into hours and minutes.
+        hours, minutes = divmod(num, 100)
+        
+        return datetime.datetime(year=year, month=month, day=day, hour=int(hours % 24), minute=int(minutes))
+    
+    # Connect to the database and load the flights table
+    with sqlite3.connect(db_path) as conn:
+        query = "SELECT * FROM flights"
+        flights = pd.read_sql(query, conn)
+    
+    # Convert time columns to datetime objects using the helper function
+    flights["dep_time"] = flights.apply(lambda row: parse_dtime(row["year"], row["month"], row["day"], row["dep_time"]), axis=1)
+    flights["sched_dep_time"] = flights.apply(lambda row: parse_dtime(row["year"], row["month"], row["day"], row["sched_dep_time"]), axis=1)
+    flights["arr_time"] = flights.apply(lambda row: parse_dtime(row["year"], row["month"], row["day"], row["arr_time"]), axis=1)
+    flights["sched_arr_time"] = flights.apply(lambda row: parse_dtime(row["year"], row["month"], row["day"], row["sched_arr_time"]), axis=1)
+
+    # Convert delay and air_time fields into timedelta objects
+    flights["dep_delay"] = flights["dep_delay"].apply(lambda delay: datetime.timedelta(minutes=delay) if not pd.isna(delay) else pd.NA)
+    flights["arr_delay"] = flights["arr_delay"].apply(lambda delay: datetime.timedelta(minutes=delay) if not pd.isna(delay) else pd.NA)
+    flights["air_time"] = flights["air_time"].apply(lambda air_time: datetime.timedelta(minutes=air_time) if not pd.isna(air_time) else pd.NA)
+    
+    return flights
+
+# Example usage:
+df_with_dtime = flights_with_dtime_objects()
+# print(df_with_dtime.head())
