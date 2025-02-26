@@ -9,6 +9,8 @@ import math
 import sqlite3
 import numpy as np
 from plotly.subplots import make_subplots
+import datetime
+
 
 
 # =============== Data processing for airports.csv ===============
@@ -844,6 +846,23 @@ for idx, row in df_flights_bearing_small.iterrows():
     
 
 # =============== Part 4 ===============
+def compute_air_time(sched_dep, sched_arr):
+    # Convert scheduled times to 4-digit strings (e.g., 530 -> "0530")
+    dep_str = f"{int(sched_dep):04d}"
+    arr_str = f"{int(sched_arr):04d}"
+    
+    # Parse the time strings into datetime objects (using an arbitrary common date)
+    dep_time = datetime.datetime.strptime(dep_str, "%H%M")
+    arr_time = datetime.datetime.strptime(arr_str, "%H%M")
+    
+    # If arrival time is earlier than departure time, assume the flight crossed midnight
+    if arr_time < dep_time:
+        arr_time += datetime.timedelta(days=1)
+    
+    # Calculate the difference in minutes
+    return (arr_time - dep_time).seconds / 60
+
+# Missing values handling
 with sqlite3.connect(db_path) as conn:
     df_flights = pd.read_sql_query("SELECT * FROM flights", conn)
 
@@ -855,30 +874,22 @@ missing_counts = df_flights.isnull().sum()
 df_flights['dep_time'] = df_flights['dep_time'].fillna(df_flights['sched_dep_time'])
 df_flights['arr_time'] = df_flights['arr_time'].fillna(df_flights['sched_arr_time'])
 
-# Fill missing values in 'dep_delay' and 'arr_delay' with 0
+# Fill missing values in 'dep_delay' and 'arr_delay' with 0 (assuming missing indicates no delay)
 df_flights['dep_delay'] = df_flights['dep_delay'].fillna(0)
 df_flights['arr_delay'] = df_flights['arr_delay'].fillna(0)
 
 # Fill missing values in 'tailnum' with "Unknown"
 df_flights['tailnum'] = df_flights['tailnum'].fillna("Unknown")
 
-# Fill missing values in 'air_time' with the median value of 'air_time'
-df_flights['air_time'] = df_flights['air_time'].fillna(df_flights['air_time'].median())
-
-# print("Flights table missing values after filling:",df_flights.isnull().sum())
+# Fill missing values in 'air_time' using the computed difference from scheduled times
+df_flights['air_time'] = df_flights.apply(
+    lambda row: compute_air_time(row['sched_dep_time'], row['sched_arr_time'])
+                if pd.isnull(row['air_time']) else row['air_time'],
+    axis=1
+)
 conn.close()
 
-# find duplicate_flights 
-def find_duplicate_flights():
-    with sqlite3.connect(db_path) as conn:
-        query = """
-            SELECT year, month, day, flight, origin, dest, time_hour, COUNT(*) AS duplicate_count
-            FROM flights
-            GROUP BY year, month, day, flight, origin, dest, time_hour
-            HAVING duplicate_count > 1;
-        """
-        duplicates = pd.read_sql_query(query, conn)
-    return duplicates
+# Check missing values after filling
+# print("Flights table missing values after filling:", df_flights.isnull().sum())
 
-duplicate_flights = find_duplicate_flights()
-print("Duplicate flights:", duplicate_flights)
+# find duplicate_flights 
