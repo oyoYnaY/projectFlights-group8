@@ -842,3 +842,43 @@ for idx, row in df_flights_bearing_small.iterrows():
 
     # fig.show()
     
+
+# =============== Part 4 ===============
+with sqlite3.connect(db_path) as conn:
+    df_flights = pd.read_sql_query("SELECT * FROM flights", conn)
+
+# Check missing values before filling
+missing_counts = df_flights.isnull().sum()
+# print("Flights table missing values before filling:", missing_counts)
+
+# Fill missing values in 'dep_time' and 'arr_time' with 'sched_dep_time' and 'sched_arr_time'
+df_flights['dep_time'] = df_flights['dep_time'].fillna(df_flights['sched_dep_time'])
+df_flights['arr_time'] = df_flights['arr_time'].fillna(df_flights['sched_arr_time'])
+
+# Fill missing values in 'dep_delay' and 'arr_delay' with 0
+df_flights['dep_delay'] = df_flights['dep_delay'].fillna(0)
+df_flights['arr_delay'] = df_flights['arr_delay'].fillna(0)
+
+# Fill missing values in 'tailnum' with "Unknown"
+df_flights['tailnum'] = df_flights['tailnum'].fillna("Unknown")
+
+# Fill missing values in 'air_time' with the median value of 'air_time'
+df_flights['air_time'] = df_flights['air_time'].fillna(df_flights['air_time'].median())
+
+# print("Flights table missing values after filling:",df_flights.isnull().sum())
+conn.close()
+
+# find duplicate_flights 
+def find_duplicate_flights():
+    with sqlite3.connect(db_path) as conn:
+        query = """
+            SELECT year, month, day, flight, origin, dest, time_hour, COUNT(*) AS duplicate_count
+            FROM flights
+            GROUP BY year, month, day, flight, origin, dest, time_hour
+            HAVING duplicate_count > 1;
+        """
+        duplicates = pd.read_sql_query(query, conn)
+    return duplicates
+
+duplicate_flights = find_duplicate_flights()
+print("Duplicate flights:", duplicate_flights)
