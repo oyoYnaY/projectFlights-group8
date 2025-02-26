@@ -50,25 +50,57 @@ The following Python libraries were used in this project for **data processing, 
 
 ### Data Cleaning
 
+First, we print the missing values:
+
 ```python
 print("missing values in each column:\n", df.isnull().sum())
 ```
 
-missing values in each column:
-faa 0
-name 0
-lat 0
-lon 0
-alt 0
-tz 48
-dst 48
-tzone 119
+We obtained the following missing values for each column:
 
-No missing values in FAA codes, airport names, coordinates, and altitude.
-Missing tz (time zone offset) and dst (daylight saving time info) in 48 rows.
-tzone (time zone name) missing in 119 rows, which may impact time-based analysis.
+| Column | Missing Values |
+| ------ | -------------- |
+| faa    | 0              |
+| name   | 0              |
+| lat    | 0              |
+| lon    | 0              |
+| alt    | 0              |
+| tz     | 48             |
+| dst    | 48             |
+| tzone  | 119            |
 
 Since tz (UTC offset), dst (Daylight Saving Time), and tzone (time zone name) are related, we can infer their missing values instead of dropping them. This will help retain more data and improve the accuracy of our analysis.
+
+1. **Infer Timezone Based on Geographic Coordinates (tzone):**  
+   If there are missing values in the `tzone` column, we use the `TimezoneFinder` library to determine the correct timezone for each airport based on its latitude and longitude, thereby filling in the missing `tzone` values.
+
+2. **Fill in the Timezone Offset (tz) Using a Known Mapping:**  
+   First, we extract the existing mapping between `tzone` and `tz` from the data and construct a mapping dictionary. Then, for missing values in the `tz` column, we fill them in by looking up the corresponding `tz` value using the `tzone`.
+
+3. **Infer Daylight Saving Time (dst) Based on tzone:**  
+   For the missing `dst` values, we define a custom function `infer_dst_from_tzone` that determines the daylight saving time setting based on the content of `tzone`:
+
+   - If `tzone` contains `"America/"`, set it to `'A'`.
+   - If `tzone` contains `"Europe/"`, set it to `'E'`.
+   - Otherwise, set it to `'N'`.
+   - If `tzone` is missing, set it to `'U'`.
+
+4. **Manual Filling of Missing Values:**
+
+   ```python
+   print(df[df["tz"].isnull()])
+   ```
+
+   The output shows:
+
+   | faa | name                     | lat       | lon         | alt  | tz  | dst | tzone         |
+   | --- | ------------------------ | --------- | ----------- | ---- | --- | --- | ------------- |
+   | BYI | Burley Municipal Airport | 42.542599 | -113.772003 | 4150 | NaN | A   | America/Boise |
+
+   Because the auto-inference (using TimezoneFinder and the mapping dictionary) might fail or return an incorrect value for "America/Boise", we need to manually override it with the correct value to ensure the data's accuracy.
+   
+5. **Correct Erroneous Data:**  
+   We also correct any erroneous data. For example, for records in the `tz` column with a value of `8`, we correct them to `-8` to ensure data accuracy.
 
 ### Data Transformation
 
@@ -237,7 +269,7 @@ Flights Table (`flights`)
 | `distance` | REAL | **Flight distance** (in miles) |
 | `hour` | REAL | **Scheduled departure hour** (24-hour format) |
 | `minute` | REAL | **Scheduled departure minute** |
-| `time_hour` | REAL | **Flight departure timestamp** (rounded to the hour) |
+| `time_hour` | REAL | **Scheduled Flight departure timestamp** (rounded to the hour) |
 
 ---
 
@@ -525,59 +557,6 @@ We can observe that a positive inner product indicates that the wind angle is fa
 ## Part 4
 
 ### Missing Values
-
-This part is similar to the [Data Cleaning](#data-cleaning) section, but in more detail.
-First, we print the missing values:
-
-```python
-print("missing values in each column:\n", df.isnull().sum())
-```
-
-We obtained the following missing values for each column:
-
-| Column | Missing Values |
-| ------ | -------------- |
-| faa    | 0              |
-| name   | 0              |
-| lat    | 0              |
-| lon    | 0              |
-| alt    | 0              |
-| tz     | 48             |
-| dst    | 48             |
-| tzone  | 119            |
-
-Then, we fill in the missing values using the following methods:
-
-1. **Infer Timezone Based on Geographic Coordinates (tzone):**  
-   If there are missing values in the `tzone` column, we use the `TimezoneFinder` library to determine the correct timezone for each airport based on its latitude and longitude, thereby filling in the missing `tzone` values.
-
-2. **Fill in the Timezone Offset (tz) Using a Known Mapping:**  
-   First, we extract the existing mapping between `tzone` and `tz` from the data and construct a mapping dictionary. Then, for missing values in the `tz` column, we fill them in by looking up the corresponding `tz` value using the `tzone`.
-
-3. **Infer Daylight Saving Time (dst) Based on tzone:**  
-   For the missing `dst` values, we define a custom function `infer_dst_from_tzone` that determines the daylight saving time setting based on the content of `tzone`:
-
-   - If `tzone` contains `"America/"`, set it to `'A'`.
-   - If `tzone` contains `"Europe/"`, set it to `'E'`.
-   - Otherwise, set it to `'N'`.
-   - If `tzone` is missing, set it to `'U'`.
-
-4. **Manual Filling of Missing Values:**
-
-   ```python
-   print(df[df["tz"].isnull()])
-   ```
-
-   The output shows:
-
-   | faa | name                     | lat       | lon         | alt  | tz  | dst | tzone         |
-   | --- | ------------------------ | --------- | ----------- | ---- | --- | --- | ------------- |
-   | BYI | Burley Municipal Airport | 42.542599 | -113.772003 | 4150 | NaN | A   | America/Boise |
-
-   Because the auto-inference (using TimezoneFinder and the mapping dictionary) might fail or return an incorrect value for "America/Boise", we need to manually override it with the correct value to ensure the data's accuracy.
-
-5. **Correct Erroneous Data:**  
-   We also correct any erroneous data. For example, for records in the `tz` column with a value of `8`, we correct them to `-8` to ensure data accuracy.
 
 ### Look for duplicates...
 
