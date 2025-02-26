@@ -557,8 +557,53 @@ We can observe that a positive inner product indicates that the wind angle is fa
 ## Part 4
 
 ### Missing Values
+## Data Preprocessing and Missing Values Handling
 
-### Look for duplicates...
+After loading the flights data, we examined the missing values in each column. The following table shows the missing value counts:
+
+| Column         | Missing Values |
+|----------------|----------------|
+| year           | 0              |
+| month          | 0              |
+| day            | 0              |
+| dep_time       | 10,738         |
+| sched_dep_time | 0              |
+| dep_delay      | 10,738         |
+| arr_time       | 11,453         |
+| sched_arr_time | 0              |
+| arr_delay      | 12,534         |
+| carrier        | 0              |
+| flight         | 0              |
+| tailnum        | 1,913          |
+| origin         | 0              |
+| dest           | 0              |
+| air_time       | 12,534         |
+| distance       | 0              |
+| hour           | 0              |
+| minute         | 0              |
+| time_hour      | 0              |
+
+We observe that the following fields have missing values: **dep_time**, **dep_delay**, **arr_time**, **arr_delay**, **tailnum**, and **air_time**. Notably, the number of missing values for **arr_delay**, **arr_time**, and **dep_delay** is greater than or equal to that for **dep_time**, making it difficult to derive one from the others.
+
+To preserve the dataset for further analysis, we chose the following imputation strategies:
+
+- **dep_time & arr_time:**  
+  Missing values in `dep_time` and `arr_time` are filled with their corresponding scheduled times (`sched_dep_time` and `sched_arr_time`), since the scheduled times are complete and provide a reliable substitute for the missing actual times.
+
+- **dep_delay & arr_delay:**  
+  We assume that missing delay values indicate that there was no delay. Therefore, missing values in `dep_delay` and `arr_delay` are replaced with 0.
+
+- **tailnum:**  
+  Missing values in the `tailnum` field are filled with the string `"Unknown"` to clearly indicate the absence of this information.
+
+- **air_time:**  
+  We calculate the estimated flight time based on the scheduled departure and arrival times. This is done by converting the scheduled times (assumed to be in HHMM format) into datetime objects, computing the difference in minutes (with proper handling of flights that cross midnight), and then using that difference as the replacement value for missing `air_time`. This method better reflects the expected flight duration for each flight.
+
+These imputation methods allow us to retain the data for subsequent analysis while addressing missing values in a way that respects the underlying data context.
+
+
+### Duplicate Flights 
+
 
 ### ...
 
