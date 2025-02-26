@@ -602,7 +602,23 @@ These imputation methods allow us to retain the data for subsequent analysis whi
 
 
 ### Duplicate Flights 
+Since a flight number can occur multiple times, we do not include it in the grouping criteria. The field `time_hour` is rounded to the hour, which does not provide sufficient precision to accurately identify duplicate flights. Instead, we use `sched_dep_time` (scheduled departure time) as one of the criteria.
 
+We define a flight instance as being uniquely determined by the combination of:
+- **year**
+- **month**
+- **day**
+- **origin**
+- **dest**
+- **sched_dep_time**
+- **carrier**
+- **tailnum**
+
+This refined grouping ensures that even if there are multiple flights departing within the same hour, only those with identical values in all of these fields will be considered duplicates. 
+```python
+GROUP BY year, month, day, origin, dest, sched_dep_time, carrier,tailnum
+```
+In our analysis, the result shows that each flight record is unique when using these grouping conditions.
 
 ### ...
 
