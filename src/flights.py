@@ -893,3 +893,18 @@ conn.close()
 # print("Flights table missing values after filling:", df_flights.isnull().sum())
 
 # find duplicate_flights 
+def find_duplicate_flights():
+    with sqlite3.connect(db_path) as conn:
+        query = """
+            SELECT year, month, day, origin, dest, sched_dep_time,carrier,tailnum , COUNT(*) AS duplicate_count
+            FROM flights
+            GROUP BY year, month, day, origin, dest, sched_dep_time, carrier,tailnum
+            HAVING duplicate_count > 1;
+        """
+        duplicates = pd.read_sql_query(query, conn)
+    return duplicates
+
+duplicate_flights = find_duplicate_flights()
+# print("Duplicate flights:", duplicate_flights)
+# prin duplicate flights 2023-1-10 JFK BOS 840 YX N725MQ
+# print(df_flights[(df_flights['year'] == 2023) & (df_flights['month'] == 1) & (df_flights['day'] == 10) & (df_flights['origin'] == 'JFK') & (df_flights['dest'] == 'BOS')& (df_flights['sched_dep_time'] == 840) & (df_flights['carrier'] == 'YX')]) 
