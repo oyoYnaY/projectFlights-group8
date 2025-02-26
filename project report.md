@@ -557,7 +557,6 @@ We can observe that a positive inner product indicates that the wind angle is fa
 ## Part 4
 
 ### Missing Values
-## Data Preprocessing and Missing Values Handling
 
 After loading the flights data, we examined the missing values in each column. The following table shows the missing value counts:
 
