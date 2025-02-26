@@ -269,7 +269,7 @@ Flights Table (`flights`)
 | `distance` | REAL | **Flight distance** (in miles) |
 | `hour` | REAL | **Scheduled departure hour** (24-hour format) |
 | `minute` | REAL | **Scheduled departure minute** |
-| `time_hour` | REAL | **Flight departure timestamp** (rounded to the hour) |
+| `time_hour` | REAL | **Scheduled Flight departure timestamp** (rounded to the hour) |
 
 ---
 
