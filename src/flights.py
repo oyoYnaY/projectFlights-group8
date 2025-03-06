@@ -9,8 +9,7 @@ import math
 import sqlite3
 import numpy as np
 from plotly.subplots import make_subplots
-import datetime 
-
+import datetime
 
 
 # =============== Data processing for airports.csv ===============
@@ -725,15 +724,18 @@ def generate_bearing_df():
 
         cur.execute(query_flights)
         rows_flights = cur.fetchall()
-        df_flights = pd.DataFrame(rows_flights, columns=[x[0] for x in cur.description])
+        df_flights = pd.DataFrame(rows_flights, columns=[
+                                  x[0] for x in cur.description])
 
         cur.execute(query_weather)
         rows_weather = cur.fetchall()
-        df_weather = pd.DataFrame(rows_weather, columns=[x[0] for x in cur.description])
+        df_weather = pd.DataFrame(rows_weather, columns=[
+                                  x[0] for x in cur.description])
 
         cur.execute(query_airports)
         rows_airports = cur.fetchall()
-        df_airports = pd.DataFrame(rows_airports, columns=[x[0] for x in cur.description])
+        df_airports = pd.DataFrame(rows_airports, columns=[
+                                   x[0] for x in cur.description])
 
         # 1) Merge df_flights and df_weather on origin/time_hour
         df_flights = pd.merge(
@@ -751,7 +753,8 @@ def generate_bearing_df():
             right_on="faa",
             how="left"
         )
-        df_flights.rename(columns={"lat": "lat_origin", "lon": "lon_origin"}, inplace=True)
+        df_flights.rename(
+            columns={"lat": "lat_origin", "lon": "lon_origin"}, inplace=True)
         df_flights.drop("faa", axis=1, inplace=True)
 
         # 3) Merge with df_airports to get lat/lon for the destination airport
@@ -762,7 +765,8 @@ def generate_bearing_df():
             right_on="faa",
             how="left"
         )
-        df_flights.rename(columns={"lat": "lat_dest", "lon": "lon_dest"}, inplace=True)
+        df_flights.rename(
+            columns={"lat": "lat_dest", "lon": "lon_dest"}, inplace=True)
         df_flights.drop("faa", axis=1, inplace=True)
 
         bearings = []
@@ -784,6 +788,7 @@ def generate_bearing_df():
 
     # Return the constructed DataFrame instead of an empty string
     return df_flights
+
 
 # Example case
 df_flights_bearing = generate_bearing_df()
@@ -843,24 +848,25 @@ for idx, row in df_flights_bearing_small.iterrows():
         annotation.y += 0.05
 
     # fig.show()
-    
+
 
 # =============== Part 4 ===============
 def compute_air_time(sched_dep, sched_arr):
     # Convert scheduled times to 4-digit strings (e.g., 530 -> "0530")
     dep_str = f"{int(sched_dep):04d}"
     arr_str = f"{int(sched_arr):04d}"
-    
+
     # Parse the time strings into datetime objects (using an arbitrary common date)
     dep_time = datetime.datetime.strptime(dep_str, "%H%M")
     arr_time = datetime.datetime.strptime(arr_str, "%H%M")
-    
+
     # If arrival time is earlier than departure time, assume the flight crossed midnight
     if arr_time < dep_time:
         arr_time += datetime.timedelta(days=1)
-    
+
     # Calculate the difference in minutes
     return (arr_time - dep_time).seconds / 60
+
 
 # Missing values handling
 with sqlite3.connect(db_path) as conn:
@@ -871,8 +877,10 @@ missing_counts = df_flights.isnull().sum()
 # print("Flights table missing values before filling:", missing_counts)
 
 # Fill missing values in 'dep_time' and 'arr_time' with 'sched_dep_time' and 'sched_arr_time'
-df_flights['dep_time'] = df_flights['dep_time'].fillna(df_flights['sched_dep_time'])
-df_flights['arr_time'] = df_flights['arr_time'].fillna(df_flights['sched_arr_time'])
+df_flights['dep_time'] = df_flights['dep_time'].fillna(
+    df_flights['sched_dep_time'])
+df_flights['arr_time'] = df_flights['arr_time'].fillna(
+    df_flights['sched_arr_time'])
 
 # Fill missing values in 'dep_delay' and 'arr_delay' with 0 (assuming missing indicates no delay)
 df_flights['dep_delay'] = df_flights['dep_delay'].fillna(0)
@@ -884,7 +892,7 @@ df_flights['tailnum'] = df_flights['tailnum'].fillna("Unknown")
 # Fill missing values in 'air_time' using the computed difference from scheduled times
 df_flights['air_time'] = df_flights.apply(
     lambda row: compute_air_time(row['sched_dep_time'], row['sched_arr_time'])
-                if pd.isnull(row['air_time']) else row['air_time'],
+    if pd.isnull(row['air_time']) else row['air_time'],
     axis=1
 )
 conn.close()
@@ -892,7 +900,9 @@ conn.close()
 # Check missing values after filling
 # print("Flights table missing values after filling:", df_flights.isnull().sum())
 
-# find duplicate_flights 
+# find duplicate_flights
+
+
 def find_duplicate_flights():
     with sqlite3.connect(db_path) as conn:
         query = """
@@ -904,12 +914,15 @@ def find_duplicate_flights():
         duplicates = pd.read_sql_query(query, conn)
     return duplicates
 
+
 duplicate_flights = find_duplicate_flights()
 # print("Duplicate flights:", duplicate_flights)
 # prin duplicate flights 2023-1-10 JFK BOS 840 YX N725MQ
-# print(df_flights[(df_flights['year'] == 2023) & (df_flights['month'] == 1) & (df_flights['day'] == 10) & (df_flights['origin'] == 'JFK') & (df_flights['dest'] == 'BOS')& (df_flights['sched_dep_time'] == 840) & (df_flights['carrier'] == 'YX')]) 
+# print(df_flights[(df_flights['year'] == 2023) & (df_flights['month'] == 1) & (df_flights['day'] == 10) & (df_flights['origin'] == 'JFK') & (df_flights['dest'] == 'BOS')& (df_flights['sched_dep_time'] == 840) & (df_flights['carrier'] == 'YX')])
 
 # covert to datetime objects
+
+
 def flights_with_dtime_objects():
     def parse_dtime(year, month, day, num):
         # If the time value is missing, return a missing value indicator.
@@ -919,30 +932,42 @@ def flights_with_dtime_objects():
         # If the time is 2400, consider it as midnight of the next day.
         if num == 2400:
             return datetime.datetime(year=year, month=month, day=day) + datetime.timedelta(days=1)
-        
+
         # Split the number into hours and minutes.
         hours, minutes = divmod(num, 100)
-        
+
         return datetime.datetime(year=year, month=month, day=day, hour=int(hours % 24), minute=int(minutes))
-    
+
     # Connect to the database and load the flights table
     with sqlite3.connect(db_path) as conn:
         query = "SELECT * FROM flights"
         flights = pd.read_sql(query, conn)
-    
+
     # Convert time columns to datetime objects using the helper function
-    flights["dep_time"] = flights.apply(lambda row: parse_dtime(row["year"], row["month"], row["day"], row["dep_time"]), axis=1)
-    flights["sched_dep_time"] = flights.apply(lambda row: parse_dtime(row["year"], row["month"], row["day"], row["sched_dep_time"]), axis=1)
-    flights["arr_time"] = flights.apply(lambda row: parse_dtime(row["year"], row["month"], row["day"], row["arr_time"]), axis=1)
-    flights["sched_arr_time"] = flights.apply(lambda row: parse_dtime(row["year"], row["month"], row["day"], row["sched_arr_time"]), axis=1)
+    flights["dep_time"] = flights.apply(lambda row: parse_dtime(
+        row["year"], row["month"], row["day"], row["dep_time"]), axis=1)
+    flights["sched_dep_time"] = flights.apply(lambda row: parse_dtime(
+        row["year"], row["month"], row["day"], row["sched_dep_time"]), axis=1)
+    flights["arr_time"] = flights.apply(lambda row: parse_dtime(
+        row["year"], row["month"], row["day"], row["arr_time"]), axis=1)
+    flights["sched_arr_time"] = flights.apply(lambda row: parse_dtime(
+        row["year"], row["month"], row["day"], row["sched_arr_time"]), axis=1)
 
     # Convert delay and air_time fields into timedelta objects
-    flights["dep_delay"] = flights["dep_delay"].apply(lambda delay: datetime.timedelta(minutes=delay) if not pd.isna(delay) else pd.NA)
-    flights["arr_delay"] = flights["arr_delay"].apply(lambda delay: datetime.timedelta(minutes=delay) if not pd.isna(delay) else pd.NA)
-    flights["air_time"] = flights["air_time"].apply(lambda air_time: datetime.timedelta(minutes=air_time) if not pd.isna(air_time) else pd.NA)
-    
+    flights["dep_delay"] = flights["dep_delay"].apply(
+        lambda delay: datetime.timedelta(minutes=delay) if not pd.isna(delay) else pd.NA)
+    flights["arr_delay"] = flights["arr_delay"].apply(
+        lambda delay: datetime.timedelta(minutes=delay) if not pd.isna(delay) else pd.NA)
+    flights["air_time"] = flights["air_time"].apply(lambda air_time: datetime.timedelta(
+        minutes=air_time) if not pd.isna(air_time) else pd.NA)
+
     return flights
+
 
 # Example usage:
 df_with_dtime = flights_with_dtime_objects()
 # print(df_with_dtime.head())
+
+#####################################################################
+# Checking whether the dat in flights is in order (Part 4)
+#####################################################################
