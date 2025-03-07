@@ -971,3 +971,89 @@ df_with_dtime = flights_with_dtime_objects()
 #####################################################################
 # Checking whether the dat in flights is in order (Part 4)
 #####################################################################
+with sqlite3.connect('../flights_database.db') as conn:
+    df = pd.read_sql('SELECT * FROM flights', conn)
+
+df = df.copy()
+
+fix_count = {
+    'dep_time': 0, 'dep_delay': 0, 'arr_time': 0, 'arr_delay': 0, 'air_time': 0
+}
+
+
+def hhmm_to_minutes(hhmm):
+    """Convert HHMM time format to total minutes since midnight."""
+    if pd.isna(hhmm) or hhmm < 0:
+        return None
+    hh = hhmm // 100
+    mm = hhmm % 100
+    return hh * 60 + mm
+
+
+def minutes_to_hhmm(minutes):
+    """Convert total minutes since midnight back to HHMM format, handling midnight wrap."""
+    if pd.isna(minutes) or minutes < 0:
+        return None
+    minutes = minutes % 1440  # Ensure time does not exceed 23:59
+    hh = minutes // 60
+    mm = minutes % 60
+    return hh * 100 + mm if hh > 0 else mm
+
+
+def fix_times_if_else(df, time_col, sched_col, delay_col):
+    """Fix missing or incorrect departure and arrival times."""
+    for index, row in df.iterrows():
+        time = row[time_col]
+        sched_time = row[sched_col]
+        delay = row[delay_col]
+
+        time = hhmm_to_minutes(time) if pd.notna(time) else None
+        sched_time = hhmm_to_minutes(sched_time)
+        delay = int(delay) if pd.notna(delay) else None
+
+        # 1. If all three values exist, ignore the row
+        if time is not None and sched_time is not None and delay is not None:
+            continue
+
+        # 2. If time is missing but sched_time and delay exist
+        elif time is None and sched_time is not None and delay is not None:
+            df.at[index, time_col] = minutes_to_hhmm(sched_time + delay)
+            fix_count[time_col] += 1
+
+        # 3. If delay is missing but sched_time and time exist
+        elif delay is None and sched_time is not None and time is not None:
+            df.at[index, delay_col] = (time - sched_time) % 1440
+            fix_count[delay_col] += 1
+
+        # 4. If both time and delay are missing, use sched_time
+        elif time is None and delay is None and sched_time is not None:
+            df.at[index, time_col] = minutes_to_hhmm(sched_time)
+            df.at[index, delay_col] = 0
+            fix_count[time_col] += 1
+            fix_count[delay_col] += 1
+
+
+def fix_air_time(df):
+    """Fix incorrect or missing air_time values."""
+    for index, row in df.iterrows():
+        dep_time = hhmm_to_minutes(row['dep_time'])
+        arr_time = hhmm_to_minutes(row['arr_time'])
+        air_time = row['air_time']
+
+        # 1. If all three values exist, ignore the row
+        if dep_time is not None and arr_time is not None and pd.notna(air_time):
+            if int(air_time) == (arr_time - dep_time) % 1440:
+                continue
+
+        # 2. If air_time is incorrect or missing, fix it
+        if dep_time is not None and arr_time is not None:
+            df.at[index, 'air_time'] = (arr_time - dep_time) % 1440
+            fix_count['air_time'] += 1
+
+
+fix_times_if_else(df, 'dep_time', 'sched_dep_time', 'dep_delay')
+fix_times_if_else(df, 'arr_time', 'sched_arr_time', 'arr_delay')
+
+fix_air_time(df)
+
+print(df)
