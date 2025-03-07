@@ -648,9 +648,10 @@ def compute_avg_speed_and_update_db():
 
         cur = conn.cursor()
         for _, row in tailnum_speed_df.iterrows():
-            cur.execute("UPDATE planes SET speed = ? WHERE tailnum = ?",
-                        (row['avg_speed'], row['tailnum']))
-            # print(f"UPDATE planes SET speed = {row['avg_speed']} WHERE tailnum = {row['tailnum']}")
+            # cur.execute("UPDATE planes SET speed = ? WHERE tailnum = ?",
+            #             (row['avg_speed'], row['tailnum']))
+            print(
+                f"UPDATE planes SET speed = {row['avg_speed']} WHERE tailnum = {row['tailnum']}")
 
 
 # compute_avg_speed_and_update_db()
