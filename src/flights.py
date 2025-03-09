@@ -1122,3 +1122,35 @@ def add_updated_times_to_db():
         conn.close()
 
 # add_updated_times_to_db()
+
+
+############################################
+# GENERATE THE COLUMN local_arr_time that represents the arrival time of the plane at local time
+############################################
+def find_tzone_from_coords():
+    '''The function takes the rows with empty tzones and uses the coordinates to find the tzone and insert back to the table'''
+    con = sqlite3.connect(db_path)
+
+    airports_df = pd.read_sql("SELECT * FROM airports", con)
+
+    print(airports_df.isna().sum())
+
+    tf = TimezoneFinder()
+
+    for idx, row in airports_df[airports_df['tzone'].isnull()].iterrows():
+        lat = row['lat']
+        lon = row['lon']
+
+        if pd.isnull(lat) or pd.isnull(lon):
+            continue
+
+        found_tzone = tf.timezone_at(lng=lon, lat=lat)
+
+        if found_tzone:
+            airports_df.at[idx, 'tzone'] = found_tzone
+        else:
+            pass
+
+    airports_df.to_sql('airports', con, if_exists='replace', index=False)
+
+    con.close()
