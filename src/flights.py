@@ -1154,3 +1154,54 @@ def find_tzone_from_coords():
     airports_df.to_sql('airports', con, if_exists='replace', index=False)
 
     con.close()
+
+# find_tzone_from_coords()
+
+
+def convert_to_local_time(row):
+    try:
+        if pd.isnull(row["arr_time"]) or pd.isnull(row["tzone"]):
+            return None
+
+        ny_tz = pytz.timezone("America/New_York")
+        dest_tz = pytz.timezone(row["tzone"])
+
+        ny_time_hhmm = int(row["arr_time"])
+        hour = ny_time_hhmm // 100
+        minute = ny_time_hhmm % 100
+
+        if hour >= 24:
+            hour -= 24
+            new_date = datetime(row["year"], row["month"],
+                                row["day"]) + timedelta(days=1)
+        else:
+            new_date = datetime(row["year"], row["month"], row["day"])
+
+        ny_time = ny_tz.localize(
+            datetime(new_date.year, new_date.month, new_date.day, hour, minute))
+        local_time = ny_time.astimezone(dest_tz)
+
+        return local_time.hour * 100 + local_time.minute
+
+    except Exception as e:
+        print(f"Error processing row {row.name}: {e}")
+        return None
+
+
+con = sqlite3.connect(db_path)
+
+airports_df = pd.read_sql("SELECT faa, lat, lon, tzone FROM airports", con)
+flights_df = pd.read_sql(
+    "SELECT year, month, day, arr_time, dest FROM flights", con)
+
+merged_df = flights_df.merge(
+    airports_df, left_on="dest", right_on="faa", how="left")
+
+merged_df = merged_df.dropna(subset=["lat", "lon"])
+
+merged_df = merged_df.reset_index(drop=True)
+
+merged_df["local_arr_time"] = merged_df.apply(convert_to_local_time, axis=1)
+
+con.close()
+# merged_df.head(10)
