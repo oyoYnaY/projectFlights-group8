@@ -10,7 +10,8 @@ import sqlite3
 import numpy as np
 from plotly.subplots import make_subplots
 import datetime
-
+from timezonefinder import TimezoneFinder
+import pytz
 
 # =============== Data processing for airports.csv ===============
 # read airports.csv
@@ -1172,13 +1173,13 @@ def convert_to_local_time(row):
 
         if hour >= 24:
             hour -= 24
-            new_date = datetime(row["year"], row["month"],
-                                row["day"]) + timedelta(days=1)
+            new_date = datetime.datetime(row["year"], row["month"],
+                                         row["day"]) + datetime.timedelta(days=1)
         else:
-            new_date = datetime(row["year"], row["month"], row["day"])
+            new_date = datetime.datetime(row["year"], row["month"], row["day"])
 
         ny_time = ny_tz.localize(
-            datetime(new_date.year, new_date.month, new_date.day, hour, minute))
+            datetime.datetime(new_date.year, new_date.month, new_date.day, hour, minute))
         local_time = ny_time.astimezone(dest_tz)
 
         return local_time.hour * 100 + local_time.minute
