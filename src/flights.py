@@ -1057,4 +1057,63 @@ fix_times_if_else(df, 'arr_time', 'sched_arr_time', 'arr_delay')
 
 fix_air_time(df)
 
-# print(df)
+# # ADDITIONAL PART : ADD THE UPDATED TIMES TO THE FLIGHTS DATABASE
+# conn = sqlite3.connect('/content/flights_database.db')
+# conn.execute("PRAGMA busy_timeout = 30000")
+# cur = conn.cursor()
+
+# unique_time_hours = df['time_hour'].unique().tolist()
+# unique_flights = df['flight'].unique().tolist()
+
+# select_all_query = f"""
+# SELECT time_hour, flight, dep_time, sched_dep_time, dep_delay, arr_time, sched_arr_time, arr_delay, air_time
+# FROM flights
+# WHERE time_hour IN ({','.join('?'*len(unique_time_hours))})
+#   AND flight IN ({','.join('?'*len(unique_flights))})
+# """
+# params = unique_time_hours + unique_flights
+# cur.execute(select_all_query, params)
+# rows = cur.fetchall()
+
+# flights_dict = {(r[0], r[1]): r[2:] for r in rows}
+
+# update_queries = []
+
+# for row in df.itertuples(index=False):
+#     key = (row.time_hour, row.flight)
+#     if key in flights_dict:
+#         current_values = flights_dict[key]
+#         if any(value is None or value == "" for value in current_values):
+#             update_query = f"""
+#                 UPDATE flights
+#                 SET dep_time = '{row.dep_time}',
+#                     sched_dep_time = '{row.sched_dep_time}',
+#                     dep_delay = '{row.dep_delay}',
+#                     arr_time = '{row.arr_time}',
+#                     sched_arr_time = '{row.sched_arr_time}',
+#                     arr_delay = '{row.arr_delay}',
+#                     air_time = '{row.air_time}'
+#                 WHERE time_hour = '{row.time_hour}' AND flight = '{row.flight}';
+#                 """
+#             update_queries.append(update_query)
+
+# conn.close()
+
+# # Database was open a second time, because of a persisting 'database is locked' error.
+# conn = sqlite3.connect('/content/flights_database.db')
+# conn.execute("PRAGMA busy_timeout = 30000")
+# conn.execute("PRAGMA journal_mode = WAL")
+# cur = conn.cursor()
+
+# update_script = "\n".join(update_queries)
+
+# try:
+#     # Execute all updates in one go.
+#     conn.executescript(update_script)
+#     conn.commit()
+#     print("All updates executed successfully.")
+# except Exception as e:
+#     conn.rollback()
+#     print("Error during batch update:", e)
+# finally:
+#     conn.close()
