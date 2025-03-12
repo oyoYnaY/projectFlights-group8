@@ -9,6 +9,7 @@ import streamlit as st
 import geopy.distance
 import base64
 import datetime
+import statistics
 
 # --------------------- Data Loading and Preprocessing ---------------------
 db_path = "../flights_database.db"
