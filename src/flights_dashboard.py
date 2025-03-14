@@ -335,7 +335,7 @@ with col_right:
 
     fig_map.update_traces(
         marker=dict(
-            size=airports_df.apply(
+            size=airports_df_map.apply(
                 lambda x: 20 if x['is_nyc'] else (
                     10 if x['has_connection'] else 5),
                 axis=1
