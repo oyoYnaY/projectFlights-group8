@@ -35,7 +35,7 @@ This project, developed by the **XB_0112 Data Engineering** group 8, provides an
       - New data is stored in the session state and merged with the existing data for real-time display (data resets if the session is refreshed or restarted).
     - **General Results:**  
       - Presents a comprehensive analysis of the 2023 flights data.
-      - Includes various visualizations such as:...**[Need Fixed: add your code here]**
+      - Includes various visualizations.
     - **Developer Tool:**  
       - Provides an interface for executing arbitrary SQL queries (SELECT, INSERT, UPDATE, DELETE, etc.) on the 2023 database.
       - Supports real-time database modifications and testing.
