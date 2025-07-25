@@ -110,6 +110,7 @@ PROJECTFLIGHTS-GROUP8/
 │-- README.md             # Project documentation
 │-- flights_database.db   # Database
 │-- flights_part1-5.pdf   # Assignment introduction
+|-- requirements.txt      # Lists all Python dependencies required to run the project
 ```
 ### Git Collaboration Guidelines
 [CONTRIBUTING.md](CONTRIBUTING.md)
