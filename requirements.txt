@@ -1,0 +1,12 @@
+streamlit
+pandas
+plotly
+geopy
+matplotlib
+timezonefinder
+seaborn
+numpy
+scikit-learn
+networkx
+dash
+base64
