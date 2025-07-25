@@ -9,4 +9,3 @@ numpy
 scikit-learn
 networkx
 dash
-base64
