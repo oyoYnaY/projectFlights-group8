@@ -10,9 +10,11 @@ import geopy.distance
 import base64
 import datetime
 import statistics
+import os  
 
 # --------------------- Data Loading and Preprocessing ---------------------
-db_path = "../flights_database.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
+db_path  = os.path.join(BASE_DIR, "..", "flights_database.db") 
 conn = sqlite3.connect(db_path)
 df = pd.read_sql_query("SELECT * FROM airports", conn)
 conn.close()
@@ -356,9 +358,8 @@ with col_page:
 
 # --------------------- Other Data Loading ---------------------
 def load_city_data():
-    city_file_path = "../data/worldcities.csv"  
-    city_df = pd.read_csv(city_file_path)
-    return city_df
+    city_file_path = os.path.join(BASE_DIR, "..", "data", "worldcities.csv") 
+    return pd.read_csv(city_file_path)
 
 city_df = load_city_data()
 
@@ -690,7 +691,7 @@ else:
         new_df = pd.DataFrame(st.session_state["new_airports"])
         df = pd.concat([df, new_df], ignore_index=True)
         
-    with open("../figures/airplane.png", "rb") as f:
+    with open(os.path.join(BASE_DIR, "..", "figures", "airplane.png"), "rb") as f:  
         encoded_image = base64.b64encode(f.read()).decode()
         airplane_img = "data:image/png;base64," + encoded_image
     st.sidebar.markdown(
